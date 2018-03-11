@@ -1,0 +1,1 @@
+include ':app', ':welcome', ':common', ':goodbye', ':agora', ':login', ':news', ':reports', ':poll', ':events'
