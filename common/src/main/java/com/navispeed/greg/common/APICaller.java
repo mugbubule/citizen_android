@@ -6,7 +6,6 @@ import android.os.AsyncTask;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.reflections.Store;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -17,14 +16,24 @@ import java.nio.charset.StandardCharsets;
 import javax.net.ssl.HttpsURLConnection;
 
 public class APICaller extends AsyncTask<String, Void, JSONArray> {
+
+    private static String API_URL = "https://citizen.navispeed.eu/api";
+
     private ReceiveData handler;
+
+    public void get(String endpoint) {
+        execute(API_URL + (endpoint.startsWith("/") ? endpoint : "/" + endpoint), "GET");
+    }
+
+    private static int PARAM_URL = 0;
+    private static int PARAM_METHOD = 1;
     @Override
-    protected JSONArray doInBackground(String... urls) {
+    protected JSONArray doInBackground(String... params) {
         try {
-            URL url = new URL(urls[0]);
+            URL url = new URL(params[PARAM_URL]);
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             //connection.setDoOutput(true);
-            connection.setRequestMethod(urls[1]);
+            connection.setRequestMethod(params[PARAM_METHOD]);
             connection.setRequestProperty("Authorization", "Bearer " + StoredData.getInstance().getAccessToken());
             connection.setConnectTimeout(5000);
             connection.setReadTimeout(5000);

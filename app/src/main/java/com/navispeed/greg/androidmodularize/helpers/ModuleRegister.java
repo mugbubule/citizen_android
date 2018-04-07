@@ -7,6 +7,7 @@ import com.navispeed.greg.welcome.WelcomeModule;
 import java.util.ArrayList;
 import java.util.List;
 
+import jonas.emile.agora.AgoraModule;
 import jonas.emile.events.EventsModule;
 import jonas.emile.login.LoginModule;
 import jonas.emile.news.NewsModule;
@@ -32,6 +33,7 @@ public class ModuleRegister {
         this.moduleList.add(LoginModule.getInstance());
         this.moduleList.add(NewsModule.getInstance());
         this.moduleList.add(ReportsModule.getInstance());
+        this.moduleList.add(AgoraModule.getInstance());
     }
 
     public final List<Module> getModuleList() {

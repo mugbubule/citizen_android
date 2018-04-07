@@ -32,7 +32,7 @@ public class EventsActivity extends AppCompatActivity {
             }
         };
         apiCaller.setHandler(handler);
-        apiCaller.execute("https://citizen.navispeed.eu/api/events/all", "GET");
+        apiCaller.get("/events/all");
 
         GridView gridview = (GridView) findViewById(R.id.gridview);
         gridview.setAdapter(new ImageAdapter(this));
