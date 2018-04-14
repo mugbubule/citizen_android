@@ -8,6 +8,8 @@ public class AgoraModule implements Module {
 
     private static final AgoraModule agoraInstance = new AgoraModule();
 
+    static final String MODULE_PATH = "/threads/";
+
     public static AgoraModule getInstance() {
         return agoraInstance;
     }

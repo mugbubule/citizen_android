@@ -21,15 +21,20 @@ public class APICaller extends AsyncTask<String, Void, JSONArray> {
 
     private ReceiveData handler;
 
+    public static void get(String endpoint, ReceiveData handler) {
+        new APICaller().setHandler(handler).get(endpoint);
+    }
+
     public void get(String endpoint) {
         execute(API_URL + (endpoint.startsWith("/") ? endpoint : "/" + endpoint), "GET");
     }
 
-    private static int PARAM_URL = 0;
-    private static int PARAM_METHOD = 1;
     @Override
     protected JSONArray doInBackground(String... params) {
         try {
+            final int PARAM_URL = 0;
+            final int PARAM_METHOD = 1;
+
             URL url = new URL(params[PARAM_URL]);
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             //connection.setDoOutput(true);
@@ -50,8 +55,9 @@ public class APICaller extends AsyncTask<String, Void, JSONArray> {
         }
     }
 
-    public void setHandler(ReceiveData handler) {
+    public APICaller setHandler(ReceiveData handler) {
         this.handler = handler;
+        return this;
     }
 
     protected void onPostExecute(JSONArray result) {

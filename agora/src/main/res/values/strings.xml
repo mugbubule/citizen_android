@@ -1,1 +1,7 @@
-<resources></resources>
+<resources>
+    <string name="threads">Discussions</string>
+    <string name="threadsCat">Discussions about: %s</string>
+    <string name="newThread">Start new discussion</string>
+    <string name="categories">Discussion categories</string>
+    <string name="posts">Topic: %s</string>
+</resources>

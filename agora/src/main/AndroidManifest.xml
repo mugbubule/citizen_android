@@ -3,7 +3,9 @@
     package="jonas.emile.agora">
 
     <application>
-        <activity android:name=".AgoraActivity"></activity>
+        <activity android:name=".AgoraActivity" />
+        <activity android:name=".CategoryActivity" />
+        <activity android:name=".ThreadActivity"/>
     </application>
 
 </manifest>
