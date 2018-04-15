@@ -1,15 +1,15 @@
 package jonas.emile.agora;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.navispeed.greg.common.APICaller;
-import com.navispeed.greg.common.ReceiveData;
+import com.navispeed.greg.common.ReceiveArray;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,7 +42,7 @@ public class CategoryActivity extends AppCompatActivity {
 
     private void getThreads(final int pageNb) { // TODO: populate
         APICaller.get(MODULE_PATH + "category/" + categoryId + "?pageNb=" + pageNb + "&pageSize=" + pageSize,
-                new ReceiveData() {
+                new ReceiveArray() {
                     @Override
                     public void onReceiveData(JSONArray data) {
                         if (pageNb == 0)

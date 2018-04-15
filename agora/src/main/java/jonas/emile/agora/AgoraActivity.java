@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.navispeed.greg.common.APICaller;
-import com.navispeed.greg.common.ReceiveData;
+import com.navispeed.greg.common.ReceiveArray;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,7 +25,7 @@ public class AgoraActivity extends AppCompatActivity {
     }
 
     private void getCategories() {
-        APICaller.get(MODULE_PATH + "categories/all", new ReceiveData() {
+        APICaller.get(MODULE_PATH + "categories/all", new ReceiveArray() {
             @Override
             public void onReceiveData(JSONArray data) {
                 fillCatsLayout(data);

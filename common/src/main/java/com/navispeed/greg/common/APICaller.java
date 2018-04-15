@@ -15,7 +15,7 @@ import java.nio.charset.StandardCharsets;
 
 import javax.net.ssl.HttpsURLConnection;
 
-public class APICaller extends AsyncTask<String, Void, JSONArray> {
+public class APICaller extends AsyncTask<String, Void, String> {
 
     private static String API_URL = "https://citizen.navispeed.eu/api";
 
@@ -30,7 +30,7 @@ public class APICaller extends AsyncTask<String, Void, JSONArray> {
     }
 
     @Override
-    protected JSONArray doInBackground(String... params) {
+    protected String doInBackground(String... params) {
         try {
             final int PARAM_URL = 0;
             final int PARAM_METHOD = 1;
@@ -46,10 +46,9 @@ public class APICaller extends AsyncTask<String, Void, JSONArray> {
  //           connection.connect();
             InputStream in = new BufferedInputStream(connection.getInputStream());
             String inString = IOUtils.toString(in, StandardCharsets.UTF_8.name());
-            JSONArray jObject = new JSONArray(inString);
             connection.disconnect();
-            return jObject;
-        } catch (JSONException | IOException e) {
+            return inString;
+        } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
@@ -60,7 +59,7 @@ public class APICaller extends AsyncTask<String, Void, JSONArray> {
         return this;
     }
 
-    protected void onPostExecute(JSONArray result) {
+    protected void onPostExecute(String result) {
         if (result != null) //pitète afficher une erreur de network?
             handler.onReceiveData(result);
     }

@@ -5,11 +5,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.navispeed.greg.common.APICaller;
 import com.navispeed.greg.common.ImageAdapter;
+import com.navispeed.greg.common.ReceiveArray;
 import com.navispeed.greg.common.ReceiveData;
 
 import org.json.JSONArray;
@@ -25,7 +25,7 @@ public class EventsActivity extends AppCompatActivity {
         //final TextView content = (TextView) findViewById(R.id.textView);
         //content.setText("xddddd".toLowerCase());
         APICaller apiCaller = new APICaller();
-        ReceiveData handler = new ReceiveData() {
+        ReceiveData handler = new ReceiveArray() {
             @Override
             public void onReceiveData(JSONArray data) {
                 //content.setText(data.toString());
