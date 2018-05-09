@@ -7,7 +7,7 @@ build.dependsOn preBuild
 
 android {
     compileSdkVersion 24
-    buildToolsVersion '26.0.2'
+    buildToolsVersion '27.0.3'
     defaultConfig {
         def addConstant = {constantName, constantValue ->
             manifestPlaceholders = [ (constantName):constantValue]
