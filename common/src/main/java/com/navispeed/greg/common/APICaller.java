@@ -73,7 +73,7 @@ public class APICaller extends AsyncTask<String, Void, String> {
         new APICaller().setHandler(handler).get(endpoint);
     }
 
-    public static <T> void get(Context c, String endpoint, Consumer<T> onSuccess, Response.ErrorListener onError, Class<T> as, boolean withAuth) {
+    public static <T> void get(Context c, String endpoint, Consumer<T> onSuccess, Response.ErrorListener onError, boolean withAuth, Class<T> as) {
         RequestQueue queue = Volley.newRequestQueue(c);
 
         StringRequest stringRequest = new StringRequestWithAuth(Request.Method.GET, getAbsoluteUrl(endpoint),
@@ -83,23 +83,23 @@ public class APICaller extends AsyncTask<String, Void, String> {
                     } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
                         Log.e("APICaller.get", "LogicalError :" + e.getMessage());
                     }
-                }, onError);
+                }, onError, withAuth);
         queue.add(stringRequest);
     }
 
-    public static <T> void post(Context c, String endpoint, JSONObject body, Consumer<T> onSuccess, Response.ErrorListener onError, Class<T> as, boolean withAuth) {
-        withBody(Request.Method.POST, c, endpoint, body, onSuccess, onError, as, withAuth);
+    public static <T> void post(Context c, String endpoint, JSONObject body, Consumer<T> onSuccess, Response.ErrorListener onError, boolean withAuth, Class<T> as) {
+        withBody(Request.Method.POST, c, endpoint, body, onSuccess, onError, withAuth, as);
     }
 
-    public static <T> void put(Context c, String endpoint, JSONObject body, Consumer<T> onSuccess, Response.ErrorListener onError, Class<T> as, boolean withAuth) {
-        withBody(Request.Method.PUT, c, endpoint, body, onSuccess, onError, as, withAuth);
+    public static <T> void put(Context c, String endpoint, JSONObject body, Consumer<T> onSuccess, Response.ErrorListener onError, boolean withAuth, Class<T> as) {
+        withBody(Request.Method.PUT, c, endpoint, body, onSuccess, onError, withAuth, as);
     }
 
-    public static <T> void delete(Context c, String endpoint, JSONObject body, Consumer<T> onSuccess, Response.ErrorListener onError, Class<T> as, boolean withAuth) {
-        withBody(Request.Method.PUT, c, endpoint, body, onSuccess, onError, as, withAuth);
+    public static <T> void delete(Context c, String endpoint, JSONObject body, Consumer<T> onSuccess, Response.ErrorListener onError, boolean withAuth, Class<T> as) {
+        withBody(Request.Method.PUT, c, endpoint, body, onSuccess, onError, withAuth, as);
     }
 
-    private static <T> void withBody(int m, Context c, String endpoint, JSONObject body, Consumer<T> onSuccess, Response.ErrorListener onError, Class<T> as, boolean withAuth) {
+    private static <T> void withBody(int m, Context c, String endpoint, JSONObject body, Consumer<T> onSuccess, Response.ErrorListener onError, boolean withAuth, Class<T> as) {
         RequestQueue queue = Volley.newRequestQueue(c);
 
         StringRequestWithAuth stringRequest = new StringRequestWithAuth(m, getAbsoluteUrl(endpoint),

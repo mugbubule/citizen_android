@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="jonas.emile.poll">
+          package="jonas.emile.poll">
 
     <application
-        android:allowBackup="true"
-        android:label="@string/app_name"
-        android:supportsRtl="true">
-        <activity android:name=".PollActivity" />
+            android:allowBackup="true"
+            android:label="@string/app_name"
+            android:supportsRtl="true">
+        <activity
+                android:name=".activity.PollListActivity"
+                android:label="@string/title_activity_poll_list"
+                android:theme="@style/AppTheme.NoActionBar">
+        </activity>
     </application>
 
 </manifest>
