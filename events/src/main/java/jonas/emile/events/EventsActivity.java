@@ -6,13 +6,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
-
 import com.navispeed.greg.common.APICaller;
 import com.navispeed.greg.common.ImageAdapter;
-import com.navispeed.greg.common.ReceiveArray;
-import com.navispeed.greg.common.ReceiveData;
-
-import org.json.JSONArray;
 
 /* Created by jonas_e on 18/11/2017. */
 
@@ -25,14 +20,14 @@ public class EventsActivity extends AppCompatActivity {
         //final TextView content = (TextView) findViewById(R.id.textView);
         //content.setText("xddddd".toLowerCase());
         APICaller apiCaller = new APICaller();
-        ReceiveData handler = new ReceiveArray() {
-            @Override
-            public void onReceiveData(JSONArray data) {
-                //content.setText(data.toString());
-            }
-        };
-        apiCaller.setHandler(handler);
-        apiCaller.get("/events/all");
+//        ReceiveData handler = new ReceiveArray() {
+//            @Override
+//            public void onReceiveData(JSONArray data) {
+//                //content.setText(data.toString());
+//            }
+//        };
+//        apiCaller.setHandler(handler);
+//        apiCaller.get("/events/all");
 
         GridView gridview = (GridView) findViewById(R.id.gridview);
         gridview.setAdapter(new ImageAdapter(this));
