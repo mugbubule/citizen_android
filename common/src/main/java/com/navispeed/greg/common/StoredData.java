@@ -9,6 +9,9 @@ public class StoredData {
     private String accessToken;
     private String refreshToken;
 
+    private StoredData() {
+    }
+
     public void init(SharedPreferences sharedPreferences) {
         this.sharedPreferences = sharedPreferences;
         accessToken = sharedPreferences.getString("accessToken", "placeholder if not initizalized");
