@@ -2,9 +2,9 @@ package jonas.emile.agora;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Layout;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -22,7 +22,7 @@ import static jonas.emile.agora.AgoraModule.MODULE_PATH;
 
 public class ThreadActivity extends AppCompatActivity {
 
-    private static final int pageSize = 10;
+    private static final int pageSize = 7;
     private int lastFetchedIndex = -1;
     private int lastTotalSize = pageSize;
     private String threadId;
@@ -35,46 +35,80 @@ public class ThreadActivity extends AppCompatActivity {
     }
 
     private void init() {
+
         threadId = getIntent().getStringExtra("id");
         String threadTopic = getIntent().getStringExtra("topic");
         ((TextView) findViewById(R.id.txtPosts)).setText(getResources().getString(R.string.posts, threadTopic));
-        getNextPage();
-    }
+        final ScrollView scrollView = (ScrollView) findViewById(R.id.postsScrollView);
 
-    private void getNewPosts() {
-        APICaller.get("threads/thread/" + threadId + "/posts/count", new ReceiveData() {
+        scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
             @Override
-            public void onReceiveData(String data) {
-                int nbPosts = Integer.parseInt(data);
-                getNewPosts(nbPosts);
+            public void onScrollChanged() {
+                if (scrollView.getScrollY() == 0) {
+                    final int prevSize = scrollView.getChildAt(0).getMeasuredHeight();
+                    getNextPage(new Runnable() {
+                        @Override
+                        public void run() {
+                            scrollView.post(new Runnable() {
+                                public void run() {
+                                    final int newSize = scrollView.getChildAt(0).getMeasuredHeight();
+                                    scrollView.scrollTo(0, newSize - prevSize);
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        });
+
+        getNextPage(new Runnable() {
+            @Override
+            public void run() {
+                scrollView.post(new Runnable() {
+                    public void run() {
+                        scrollView.fullScroll(View.FOCUS_DOWN);
+                    }
+                });
             }
         });
     }
 
-    private void getNewPosts(int nbPosts) {
-        int nbNewPosts = nbPosts - lastTotalSize;
-        if (lastFetchedIndex != -1 && lastTotalSize < nbPosts) {
-            getPosts(0, nbNewPosts, nbPosts);
-        }
-    }
-
-    private void getNextPage() {
+    private void getNextPage(final Runnable retrievalEndRunnable) {
         APICaller.get("threads/thread/" + threadId + "/posts/count", new ReceiveData() {
             @Override
             public void onReceiveData(String data) {
-                int nbPosts = Integer.parseInt(data);
-                // get new posts if there are some
-                getNewPosts(nbPosts);
+                final int nbPosts = Integer.parseInt(data);
                 // get next page of old posts
                 if (nbPosts > lastFetchedIndex + 1) {
                     int pageToGet = (lastFetchedIndex + 1) / pageSize;
-                    getPosts(pageToGet, -1, nbPosts);
+                    getPosts(pageToGet, -1, nbPosts, retrievalEndRunnable);
+                } else if (retrievalEndRunnable != null) {
+                    retrievalEndRunnable.run();
                 }
             }
         });
     }
 
-    private void getPosts(final int pageNb, final int newPosts, final int totalSize) {
+    private void getNewPosts(final Runnable retrievalEndRunnable) {
+        APICaller.get("threads/thread/" + threadId + "/posts/count", new ReceiveData() {
+            @Override
+            public void onReceiveData(String data) {
+                int nbPosts = Integer.parseInt(data);
+                getNewPosts(nbPosts, retrievalEndRunnable);
+            }
+        });
+    }
+
+    private void getNewPosts(int nbPosts, final Runnable retrievalEndRunnable) {
+        int nbNewPosts = nbPosts - lastTotalSize;
+        if (lastFetchedIndex != -1 && lastTotalSize < nbPosts) {
+            getPosts(0, nbNewPosts, nbPosts, retrievalEndRunnable);
+        } else if (retrievalEndRunnable != null) {
+            retrievalEndRunnable.run();
+        }
+    }
+
+    private void getPosts(final int pageNb, final int newPosts, final int totalSize, final Runnable retrievalEndRunnable) {
         APICaller.get(MODULE_PATH + "thread/" + threadId + "/posts?pageNb=" + pageNb + "&pageSize=" + pageSize,
                 new ReceiveArray() {
                     @Override
@@ -89,7 +123,9 @@ public class ThreadActivity extends AppCompatActivity {
                         lastTotalSize = totalSize;
                         if (firstLoad) {
                             // first page might be partial: get next page to have enough posts to show
-                            getNextPage();
+                            getNextPage(retrievalEndRunnable);
+                        } else if (retrievalEndRunnable != null) {
+                            retrievalEndRunnable.run();
                         }
                     }
                 });
@@ -108,7 +144,7 @@ public class ThreadActivity extends AppCompatActivity {
         } else {
             // adding old posts
             start = (lastFetchedIndex + 1) % pageSize;
-            end =  jsonPosts.length();
+            end = jsonPosts.length();
             inc = 1;
         }
         for (int i = start; i != end; i += inc) {
@@ -120,7 +156,11 @@ public class ThreadActivity extends AppCompatActivity {
         }
         if (newPosts > 0) {
             final ScrollView scrollView = (ScrollView) findViewById(R.id.postsScrollView);
-            scrollView.post(new Runnable() { public void run() { scrollView.fullScroll(View.FOCUS_DOWN); } });
+            scrollView.post(new Runnable() {
+                public void run() {
+                    scrollView.fullScroll(View.FOCUS_DOWN);
+                }
+            });
         }
     }
 
@@ -149,6 +189,6 @@ public class ThreadActivity extends AppCompatActivity {
     }
 
     public void btnClick(View v) {
-        getNewPosts();
+        getNewPosts(null);
     }
 }
