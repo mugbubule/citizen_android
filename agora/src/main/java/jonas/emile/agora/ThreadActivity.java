@@ -8,26 +8,32 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.navispeed.greg.common.APICaller;
-import com.navispeed.greg.common.ReceiveArray;
-import com.navispeed.greg.common.ReceiveData;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import jonas.emile.agora.services.PostService;
+import jonas.emile.agora.utils.PageRetriever;
+
 import static android.graphics.Color.BLACK;
-import static jonas.emile.agora.AgoraModule.MODULE_PATH;
 
 public class ThreadActivity extends AppCompatActivity {
 
     private String threadId;
-    PageRetriever pr;
+    private PageRetriever pr;
+    private PostService service;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_thread);
         init();
+        startAutoFetch();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        pr.stopAutoFetch();
     }
 
     private void init() {
@@ -37,26 +43,13 @@ public class ThreadActivity extends AppCompatActivity {
         ((TextView) findViewById(R.id.txtPosts)).setText(getResources().getString(R.string.posts, threadTopic));
 
         final ScrollView scrollView = (ScrollView) findViewById(R.id.postsScrollView);
-        PageRetriever.AddToView addToView = new PageRetriever.AddToView() {
-            @Override
-            public void add(ViewGroup viewGroup, JSONObject entry, boolean addAtEnd) throws JSONException {
-                addPost(viewGroup, entry, addAtEnd);
-            }
-        };
-        PageRetriever.GetEntryCount getCount = new PageRetriever.GetEntryCount() {
-            @Override
-            public void get(ReceiveData handler) {
-                APICaller.get("threads/thread/" + threadId + "/posts/count", handler);
-            }
-        };
-        PageRetriever.GetEntries getEntries = new PageRetriever.GetEntries() {
-            @Override
-            public void get(int pageNb, int pageSize, ReceiveArray handler) {
-                APICaller.get(MODULE_PATH + "thread/" + threadId + "/posts?pageNb=" + pageNb + "&pageSize=" + pageSize, handler);
-            }
-        };
+        service = new PostService(this, threadId);
         pr = new PageRetriever(7, scrollView, (ViewGroup) findViewById(R.id.postsLayout),
-                getCount, getEntries, addToView);
+                service, this::addPost);
+    }
+
+    private void startAutoFetch() {
+        pr.startAutoFetch(1000);
     }
 
     public void btnClick(View v) {
