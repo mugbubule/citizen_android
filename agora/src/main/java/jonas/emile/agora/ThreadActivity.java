@@ -2,11 +2,14 @@ package jonas.emile.agora;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,7 +21,6 @@ import static android.graphics.Color.BLACK;
 
 public class ThreadActivity extends AppCompatActivity {
 
-    private String threadId;
     private PageRetriever pr;
     private PostService service;
 
@@ -38,7 +40,7 @@ public class ThreadActivity extends AppCompatActivity {
 
     private void init() {
 
-        threadId = getIntent().getStringExtra("id");
+        String threadId = getIntent().getStringExtra("id");
         String threadTopic = getIntent().getStringExtra("topic");
         ((TextView) findViewById(R.id.txtPosts)).setText(getResources().getString(R.string.posts, threadTopic));
 
@@ -52,8 +54,19 @@ public class ThreadActivity extends AppCompatActivity {
         pr.startAutoFetch(1000);
     }
 
-    public void btnClick(View v) {
-        pr.getNewEntries(null);
+    public void btnClick(View btn) {
+        EditText txtView = (EditText) (findViewById(R.id.editText));
+        String msg = txtView.getText().toString();
+        btn.setEnabled(false);
+        service.sendMessage(msg).accept(consumable -> pr.getNewEntries(retrievalSuccessful -> {
+            txtView.setText("");
+            btn.setEnabled(true);
+        }), error -> {
+            Toast t = Toast.makeText(getApplicationContext(), R.string.networkError, Toast.LENGTH_LONG);
+            t.setGravity(Gravity.CENTER, 0, 0);
+            t.show();
+            btn.setEnabled(true);
+        });
     }
 
     private void addPost(ViewGroup layout, JSONObject jsonPost, boolean addAtEnd) throws JSONException {

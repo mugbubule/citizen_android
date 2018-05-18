@@ -5,4 +5,5 @@
     <string name="categories">Discussion categories</string>
     <string name="posts">Topic: %s</string>
     <string name="sendPost">Send</string>
+    <string name="networkError">Network error</string>
 </resources>

@@ -63,7 +63,7 @@ public class PageRetriever {
             timer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
-                    getNewEntries(null);
+                    getNewEntries(null, false);
                 }
             }, intervalMillis, intervalMillis);
             timerRunning = true;
@@ -125,7 +125,18 @@ public class PageRetriever {
      * @param retrievalEndAction Runnable to execute once entries are added to the ViewGroup.
      */
     public void getNewEntries(final RetrievalEndAction retrievalEndAction) {
-        if (!lock.tryAcquire()) {
+        new Thread(() -> getNewEntries(retrievalEndAction, true)).start();
+    }
+
+    private void getNewEntries(final RetrievalEndAction retrievalEndAction, boolean force) {
+        if (force) {
+            try {
+                lock.acquire();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                return;
+            }
+        } else if (!lock.tryAcquire()) {
             return;
         }
         service.getEntryCount().accept(data -> {

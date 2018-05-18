@@ -7,6 +7,7 @@ import com.navispeed.greg.common.APICaller;
 import com.navispeed.greg.common.Consumer;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.function.BiConsumer;
 
@@ -21,13 +22,20 @@ public class PostService implements PagedService {
         this.threadId = threadId;
     }
 
+    @Override
     public BiConsumer<Consumer<String>, Response.ErrorListener> getEntryCount() {
         return (Consumer<String> consumer, Response.ErrorListener onError) ->
                 APICaller.get(c, "/threads/thread/" + threadId + "/posts/count", consumer, onError, true, String.class);
     }
 
+    @Override
     public BiConsumer<Consumer<JSONArray>, Response.ErrorListener> getEntries(int pageNb, int pageSize) {
         return (Consumer<JSONArray> consumer, Response.ErrorListener onError) ->
                 APICaller.get(c, "/threads/thread/" + threadId + "/posts?pageNb=" + pageNb + "&pageSize=" + pageSize, consumer, onError, true, JSONArray.class);
+    }
+
+    public BiConsumer<Consumer<String>, Response.ErrorListener> sendMessage(String message) {
+        return (Consumer<String> consumer, Response.ErrorListener onError) ->
+                APICaller.post(c, "/threads/posts?tid=" + threadId + "&author=user&message=" + message, new JSONObject(), consumer, onError, true, String.class);
     }
 }
