@@ -34,7 +34,7 @@ public class PostService implements PagedService {
                 APICaller.get(c, "/threads/thread/" + threadId + "/posts?pageNb=" + pageNb + "&pageSize=" + pageSize, consumer, onError, true, JSONArray.class);
     }
 
-    public BiConsumer<Consumer<String>, Response.ErrorListener> sendMessage(String message) {
+    public BiConsumer<Consumer<String>, Response.ErrorListener> sendMessage(String message) { //TODO user name
         return (Consumer<String> consumer, Response.ErrorListener onError) ->
                 APICaller.post(c, "/threads/posts?tid=" + threadId + "&author=user&message=" + message, new JSONObject(), consumer, onError, true, String.class);
     }

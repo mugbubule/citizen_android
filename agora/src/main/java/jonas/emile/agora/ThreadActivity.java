@@ -46,7 +46,7 @@ public class ThreadActivity extends AppCompatActivity {
 
         final ScrollView scrollView = (ScrollView) findViewById(R.id.postsScrollView);
         service = new PostService(this, threadId);
-        pr = new PageRetriever(7, scrollView, (ViewGroup) findViewById(R.id.postsLayout),
+        pr = new PageRetriever(this, 7, scrollView, (ViewGroup) findViewById(R.id.postsLayout),
                 service, this::addPost);
     }
 
@@ -62,9 +62,7 @@ public class ThreadActivity extends AppCompatActivity {
             txtView.setText("");
             btn.setEnabled(true);
         }), error -> {
-            Toast t = Toast.makeText(getApplicationContext(), R.string.networkError, Toast.LENGTH_LONG);
-            t.setGravity(Gravity.CENTER, 0, 0);
-            t.show();
+            pr.showNetworkErrorMessage();
             btn.setEnabled(true);
         });
     }

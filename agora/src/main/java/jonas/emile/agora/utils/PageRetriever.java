@@ -1,9 +1,12 @@
 package jonas.emile.agora.utils;
 
+import android.content.Context;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ScrollView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,22 +30,26 @@ import jonas.emile.agora.services.PagedService;
 public class PageRetriever {
 
     private static final int FETCH_OLD_SCROLL_POS = 20;
+    private static final int ERROR_MESSAGE_SHOW_FREQ = 1000; // ms
 
     private int pageSize;
     private int lastFetchedIndex = -1;
     private int lastTotalSize = pageSize;
     private Semaphore lock = new Semaphore(1);
+    private long lastTimeErrorMessageShown = 0;
     private Timer timer = new Timer();
     private boolean timerRunning = false;
 
+    private Context context;
     private ScrollView scrollView;
     private ViewGroup layout;
 
     private PagedService service;
     private AddToView addToView;
 
-    public PageRetriever(int pageSize, ScrollView scrollView, ViewGroup layout,
+    public PageRetriever(Context c, int pageSize, ScrollView scrollView, ViewGroup layout,
                          PagedService service, AddToView addToView) {
+        this.context = c;
         this.pageSize = pageSize;
         this.scrollView = scrollView;
         this.layout = layout;
@@ -63,7 +70,11 @@ public class PageRetriever {
             timer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
-                    getNewEntries(null, false);
+                    getNewEntries(retrievalSuccessful -> {
+                        if (!retrievalSuccessful) {
+                            showErrorMessage(true);
+                        }
+                    }, false);
                 }
             }, intervalMillis, intervalMillis);
             timerRunning = true;
@@ -96,6 +107,8 @@ public class PageRetriever {
                                         final int newSize = scrollView.getChildAt(0).getMeasuredHeight();
                                         scrollView.scrollTo(0, newSize - prevSize);
                                     });
+                                } else {
+                                    showErrorMessage(true);
                                 }
                                 lock.release();
                             });
@@ -111,12 +124,17 @@ public class PageRetriever {
     private void getFirstPage() {
         try {
             lock.acquire();
-        } catch (InterruptedException ignored) {
+            getNextPage((successful) -> {
+                if (successful) {
+                    scrollView.post(() -> scrollView.fullScroll(View.FOCUS_DOWN));
+                    lock.release();
+                } else {
+                    showErrorMessage(false);
+                }
+            });
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-        getNextPage((successful) -> {
-            scrollView.post(() -> scrollView.fullScroll(View.FOCUS_DOWN));
-            lock.release();
-        });
     }
 
     /**
@@ -125,7 +143,14 @@ public class PageRetriever {
      * @param retrievalEndAction Runnable to execute once entries are added to the ViewGroup.
      */
     public void getNewEntries(final RetrievalEndAction retrievalEndAction) {
-        new Thread(() -> getNewEntries(retrievalEndAction, true)).start();
+        new Thread(() -> getNewEntries(retrievalSuccessful -> {
+            if (!retrievalSuccessful) {
+                showErrorMessage(false);
+            }
+            if (retrievalEndAction != null) {
+                retrievalEndAction.run(retrievalSuccessful);
+            }
+        }, true)).start();
     }
 
     private void getNewEntries(final RetrievalEndAction retrievalEndAction, boolean force) {
@@ -147,7 +172,12 @@ public class PageRetriever {
                 }
                 lock.release();
             });
-        }, error -> lock.release());
+        }, error -> {
+            if (retrievalEndAction != null) {
+                retrievalEndAction.run(false);
+            }
+            lock.release();
+        });
     }
 
     private void getNewEntries(int nbPosts, final RetrievalEndAction retrievalEndAction) {
@@ -227,6 +257,19 @@ public class PageRetriever {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public void showNetworkErrorMessage() {
+        showErrorMessage(false);
+    }
+
+    private void showErrorMessage(boolean repetitive) {
+        if (!repetitive || System.currentTimeMillis() - lastTimeErrorMessageShown >= ERROR_MESSAGE_SHOW_FREQ) {
+            lastTimeErrorMessageShown = System.currentTimeMillis();
+            Toast t = Toast.makeText(context, "Network error", Toast.LENGTH_LONG);
+            t.setGravity(Gravity.CENTER, 0, 0);
+            t.show();
         }
     }
 
