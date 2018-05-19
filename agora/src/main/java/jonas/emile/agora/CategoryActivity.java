@@ -85,7 +85,7 @@ public class CategoryActivity extends PRAutoFetchingActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(getString(R.string.newThreadPrompt));
         final EditText input = new EditText(this);
-        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
         builder.setView(input);
         builder.setPositiveButton(getString(android.R.string.ok), null);
         builder.setNegativeButton(getString(android.R.string.cancel), ((dialogInterface, i) -> dialogInterface.cancel()));

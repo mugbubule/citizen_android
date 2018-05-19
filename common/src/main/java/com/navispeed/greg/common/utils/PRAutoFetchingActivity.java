@@ -17,7 +17,9 @@ public abstract class PRAutoFetchingActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        pr = initPr();
+        if (pr == null) {
+            pr = initPr();
+        }
         pr.startAutoFetch(getAutoFetchFreq());
     }
 
