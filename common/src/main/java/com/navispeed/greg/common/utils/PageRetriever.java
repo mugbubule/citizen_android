@@ -1,10 +1,9 @@
-package jonas.emile.agora.utils;
+package com.navispeed.greg.common.utils;
 
 import android.content.Context;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
@@ -16,29 +15,27 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Semaphore;
 
-import jonas.emile.agora.services.PagedService;
-
 /**
  * PageRetriever manages scrolling in a ScrollView displaying paged information in a ViewGroup.
  * - Old information is fetched automatically when scrolling.
  * - You don't need to fetch new information right after creating the PageRetriever object.
  * - The ScrollView and ViewGroup passed to the constructor belong to the PageRetriever object.
  * If you wish to access them from outside, you should synchronize on the PageRetriever object.
- * - The ScrollView should have one and only one child.
+ * - The ScrollView should have one and only one child: the ViewGroup.
  * - Always call destroy before this object is destroyed
  */
 public class PageRetriever {
 
     private static final int FETCH_OLD_SCROLL_POS = 20;
-    private static final int ERROR_MESSAGE_SHOW_FREQ = 1000; // ms
+    private static final int ERROR_MESSAGE_SHOW_FREQ = 20000;
 
     private int pageSize;
     private int lastFetchedIndex = -1;
     private int lastTotalSize = pageSize;
     private Semaphore lock = new Semaphore(1);
+    private Semaphore fetchOldLock = new Semaphore(1);
     private long lastTimeErrorMessageShown = 0;
-    private Timer timer = new Timer();
-    private boolean timerRunning = false;
+    private Timer timer = null;
 
     private Context context;
     private ScrollView scrollView;
@@ -47,15 +44,16 @@ public class PageRetriever {
     private PagedService service;
     private AddToView addToView;
 
-    public PageRetriever(Context c, int pageSize, ScrollView scrollView, ViewGroup layout,
+    public PageRetriever(Context context, int pageSize, ScrollView scrollView, ViewGroup layout,
                          PagedService service, AddToView addToView) {
-        this.context = c;
+        this.context = context;
         this.pageSize = pageSize;
         this.scrollView = scrollView;
         this.layout = layout;
         this.service = service;
         this.addToView = addToView;
-        init();
+        initScrollView();
+        layout.removeAllViews();
         getFirstPage();
     }
 
@@ -65,8 +63,9 @@ public class PageRetriever {
      *
      * @param intervalMillis Interval of time between every fetch.
      */
-    public void startAutoFetch(int intervalMillis) {
-        if (!timerRunning) {
+    public synchronized void startAutoFetch(int intervalMillis) {
+        if (timer == null) {
+            timer = new Timer();
             timer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
@@ -77,44 +76,53 @@ public class PageRetriever {
                     }, false);
                 }
             }, intervalMillis, intervalMillis);
-            timerRunning = true;
         }
     }
 
-    public void stopAutoFetch() {
-        if (timerRunning) {
+    public synchronized void stopAutoFetch() {
+        if (timer != null) {
             timer.cancel();
-            timerRunning = false;
+            timer = null;
         }
     }
 
-    private void init() {
-        scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
-            @Override
-            public void onScrollChanged() {
-                if (scrollView.getScrollY() >= FETCH_OLD_SCROLL_POS)
+    private void initScrollView() {
+        scrollView.addOnLayoutChangeListener((view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+            int oldSize = oldBottom - oldTop;
+            int newSize = bottom - top;
+            int reduction = oldSize - newSize;
+            if (reduction > 0) {
+                scrollView.setScrollY(scrollView.getScrollY() + reduction);
+            }
+        });
+        scrollView.getViewTreeObserver().addOnScrollChangedListener(() -> {
+            if (scrollView.getScrollY() > FETCH_OLD_SCROLL_POS)
+                return;
+            if (fetchOldLock.tryAcquire()) {
+                if (scrollView.getScrollY() > FETCH_OLD_SCROLL_POS) {
+                    fetchOldLock.release();
                     return;
+                }
                 new Thread(() -> {
-                    synchronized (this) {
-                        if (scrollView.getScrollY() >= FETCH_OLD_SCROLL_POS)
-                            return;
-                        try {
-                            lock.acquire();
-                            final int prevSize = scrollView.getChildAt(0).getMeasuredHeight();
-                            getNextPage((successful) -> {
-                                if (successful) {
-                                    scrollView.post(() -> {
-                                        final int newSize = scrollView.getChildAt(0).getMeasuredHeight();
-                                        scrollView.scrollTo(0, newSize - prevSize);
-                                    });
-                                } else {
-                                    showErrorMessage(true);
-                                }
+                    try {
+                        lock.acquire();
+                        final int prevSize = scrollView.getChildAt(0).getMeasuredHeight();
+                        getNextPage((successful) -> {
+                            if (successful) {
+                                scrollView.post(() -> {
+                                    final int newSize = scrollView.getChildAt(0).getMeasuredHeight();
+                                    scrollView.scrollTo(0, newSize - prevSize + scrollView.getScrollY());
+                                    lock.release();
+                                    fetchOldLock.release();
+                                });
+                            } else {
+                                showErrorMessage(true);
                                 lock.release();
-                            });
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+                                fetchOldLock.release();
+                            }
+                        });
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
                 }).start();
             }
@@ -127,8 +135,15 @@ public class PageRetriever {
             getNextPage((successful) -> {
                 if (successful) {
                     scrollView.post(() -> scrollView.fullScroll(View.FOCUS_DOWN));
-                    lock.release();
+                    // first page might be partial: get a second page to have enough posts to show
+                    getNextPage((successful2) -> {
+                        if (successful2) {
+                            scrollView.post(() -> scrollView.fullScroll(View.FOCUS_DOWN));
+                        }
+                        lock.release();
+                    });
                 } else {
+                    lock.release();
                     showErrorMessage(false);
                 }
             });
@@ -165,7 +180,7 @@ public class PageRetriever {
             return;
         }
         service.getEntryCount().accept(data -> {
-            int nbPosts = Integer.parseInt(data);
+            int nbPosts = data;
             getNewEntries(nbPosts, (successful) -> {
                 if (retrievalEndAction != null) {
                     retrievalEndAction.run(successful);
@@ -182,7 +197,7 @@ public class PageRetriever {
 
     private void getNewEntries(int nbPosts, final RetrievalEndAction retrievalEndAction) {
         int nbNewPosts = nbPosts - lastTotalSize;
-        if (lastFetchedIndex != -1 && lastTotalSize < nbPosts) {
+        if (lastTotalSize < nbPosts) {
             getPosts(0, nbNewPosts, nbPosts, retrievalSuccessful -> {
                 if (scrollView.getScrollY() == scrollView.getChildAt(0).getMeasuredHeight() - scrollView.getMeasuredHeight()) {
                     scrollView.post(() -> scrollView.fullScroll(View.FOCUS_DOWN));
@@ -196,10 +211,10 @@ public class PageRetriever {
         }
     }
 
+    // get next page of old posts
     private void getNextPage(final RetrievalEndAction retrievalEndAction) {
         service.getEntryCount().accept(data -> {
-            final int nbPosts = Integer.parseInt(data);
-            // get next page of old posts
+            final int nbPosts = data;
             if (nbPosts > lastFetchedIndex + 1) {
                 int pageToGet = (lastFetchedIndex + 1) / pageSize;
                 getPosts(pageToGet, -1, nbPosts, retrievalEndAction);
@@ -215,18 +230,9 @@ public class PageRetriever {
 
     private void getPosts(final int pageNb, final int newPosts, final int totalSize, final RetrievalEndAction retrievalEndAction) {
         service.getEntries(pageNb, pageSize).accept(data -> {
-            boolean firstLoad = false;
-            if (lastFetchedIndex == -1) {
-                firstLoad = true;
-                layout.removeAllViews();
-            }
             addPosts(data, newPosts);
-            lastFetchedIndex += data.length();
             lastTotalSize = totalSize;
-            if (firstLoad) {
-                // first page might be partial: get next page to have enough posts to show
-                getNextPage(retrievalEndAction);
-            } else if (retrievalEndAction != null) {
+            if (retrievalEndAction != null) {
                 retrievalEndAction.run(true);
             }
         }, error -> {
@@ -257,6 +263,7 @@ public class PageRetriever {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+            lastFetchedIndex++;
         }
     }
 
@@ -267,7 +274,7 @@ public class PageRetriever {
     private void showErrorMessage(boolean repetitive) {
         if (!repetitive || System.currentTimeMillis() - lastTimeErrorMessageShown >= ERROR_MESSAGE_SHOW_FREQ) {
             lastTimeErrorMessageShown = System.currentTimeMillis();
-            Toast t = Toast.makeText(context, "Network error", Toast.LENGTH_LONG);
+            Toast t = Toast.makeText(context, "No connection", Toast.LENGTH_LONG);
             t.setGravity(Gravity.CENTER, 0, 0);
             t.show();
         }

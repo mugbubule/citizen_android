@@ -1,27 +1,27 @@
 package jonas.emile.agora;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.navispeed.greg.common.utils.PRAutoFetchingActivity;
+import com.navispeed.greg.common.utils.PageRetriever;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import jonas.emile.agora.services.PostService;
-import jonas.emile.agora.utils.PageRetriever;
 
 import static android.graphics.Color.BLACK;
 
-public class ThreadActivity extends AppCompatActivity {
+public class ThreadActivity extends PRAutoFetchingActivity {
 
-    private PageRetriever pr;
+    private static final int PAGE_SIZE = 20;
+
     private PostService service;
 
     @Override
@@ -29,30 +29,29 @@ public class ThreadActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_thread);
         init();
-        startAutoFetch();
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        pr.stopAutoFetch();
+    protected int getAutoFetchFreq() {
+        return 1000;
+    }
+
+    @Override
+    protected PageRetriever initPr() {
+        PageRetriever pr;
+        String threadId = getIntent().getStringExtra("id");
+        final ScrollView scrollView = (ScrollView) findViewById(R.id.postsScrollView);
+        service = new PostService(this, threadId);
+        pr = new PageRetriever(this, PAGE_SIZE, scrollView, (ViewGroup) findViewById(R.id.postsLayout),
+                service, this::addPost);
+        return pr;
     }
 
     private void init() {
 
-        String threadId = getIntent().getStringExtra("id");
         String threadTopic = getIntent().getStringExtra("topic");
         ((TextView) findViewById(R.id.txtPosts)).setText(getResources().getString(R.string.posts, threadTopic));
-
-        final ScrollView scrollView = (ScrollView) findViewById(R.id.postsScrollView);
-        service = new PostService(this, threadId);
-        pr = new PageRetriever(this, 7, scrollView, (ViewGroup) findViewById(R.id.postsLayout),
-                service, this::addPost);
-    }
-
-    private void startAutoFetch() {
-        pr.startAutoFetch(1000);
-    }
+        }
 
     public void btnClick(View btn) {
         EditText txtView = (EditText) (findViewById(R.id.editText));
