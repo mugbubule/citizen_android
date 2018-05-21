@@ -22,6 +22,6 @@ public class PollModule implements Module {
 
     @Override
     public String getName() {
-        return "Propositions";
+        return "Consultations";
     }
 }

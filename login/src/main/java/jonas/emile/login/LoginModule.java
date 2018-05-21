@@ -28,6 +28,6 @@ public class LoginModule implements Module {
 
     @Override
     public String getName() {
-        return "Login";
+        return "Connexion";
     }
 }

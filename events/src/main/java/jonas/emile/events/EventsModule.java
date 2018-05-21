@@ -22,6 +22,6 @@ public class EventsModule implements Module {
 
     @Override
     public String getName() {
-        return "Events";
+        return "Évènements";
     }
 }

@@ -28,11 +28,9 @@ public class ModuleRegister {
 
     private ModuleRegister() {
         this.moduleList.add(WelcomeModule.getInstance());
-        this.moduleList.add(GoodbyeModule.getInstance());
         this.moduleList.add(EventsModule.getInstance());
         this.moduleList.add(LoginModule.getInstance());
         this.moduleList.add(NewsModule.getInstance());
-        this.moduleList.add(ReportsModule.getInstance());
         this.moduleList.add(AgoraModule.getInstance());
         this.moduleList.add(PollModule.getInstance());
     }

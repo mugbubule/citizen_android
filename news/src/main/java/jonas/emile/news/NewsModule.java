@@ -22,6 +22,6 @@ public class NewsModule implements Module {
 
     @Override
     public String getName() {
-        return "News";
+        return "Nouvelles";
     }
 }

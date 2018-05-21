@@ -24,6 +24,6 @@ public class WelcomeModule implements Module {
 
     @Override
     public String getName() {
-        return "Welcome";
+        return "Bienvenue";
     }
 }
