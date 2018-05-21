@@ -8,6 +8,7 @@ import android.content.CursorLoader;
 import android.content.Loader;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -20,6 +21,7 @@ import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -40,6 +42,8 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+
+import jp.wasabeef.blurry.Blurry;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -98,6 +102,19 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
+        findViewById(R.id.background_login).post(new Runnable() {
+            @Override
+            public void run() {
+                Blurry.with(LoginActivity.this)
+                        .radius(25)
+                        .sampling(1)
+                        .color(Color.argb(80, 0, 0, 0))
+                        .async()
+                        .animate(5000)
+                        .onto((ViewGroup) findViewById(R.id.background_login));
+            }
+        });
     }
 
     private void populateAutoComplete() {

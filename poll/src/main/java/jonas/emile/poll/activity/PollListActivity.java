@@ -1,6 +1,7 @@
 package jonas.emile.poll.activity;
 
 import android.annotation.SuppressLint;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -24,6 +25,8 @@ import jonas.emile.poll.PollService;
 import jonas.emile.poll.R;
 import jonas.emile.poll.model.Choice;
 import jonas.emile.poll.model.Poll;
+import jp.wasabeef.blurry.Blurry;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -84,6 +87,19 @@ public class PollListActivity extends AppCompatActivity {
                     Log.i("#getAvailablesChoices", a.toString()), IGNORE));
         }, (VolleyError error) -> {
             Log.w("PollActivity", String.format("Something got wrong, code %d", error.networkResponse.statusCode));
+        });
+
+        findViewById(R.id.background_poll).post(new Runnable() {
+            @Override
+            public void run() {
+                Blurry.with(PollListActivity.this)
+                        .radius(25)
+                        .sampling(1)
+                        .color(Color.argb(80, 0, 0, 0))
+                        .async()
+                        .animate(5000)
+                        .onto((ViewGroup) findViewById(R.id.background_poll));
+            }
         });
     }
 
