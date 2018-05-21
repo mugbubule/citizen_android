@@ -85,9 +85,7 @@ public class PollListActivity extends AppCompatActivity {
         }, (VolleyError error) -> {
             Log.w("PollActivity", String.format("Something got wrong, code %d", error.networkResponse.statusCode));
         });
-
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -148,7 +146,7 @@ public class PollListActivity extends AppCompatActivity {
             Poll p = (Poll) getArguments().getSerializable(ARG_SECTION_POLL);
             TextView title = (TextView) rootView.findViewById(R.id.poll_title);
             TextView content = (TextView) rootView.findViewById(R.id.poll_content);
-            title.setText(p.getProposition());
+            title.setText(String.format("%s%s", p.getEnd().isBeforeNow() ? "[Terminé] " : "", p.getProposition()));
             content.setText(p.getDetails());
             LinearLayout layout = (LinearLayout) rootView.findViewById(R.id.poll_response);
 
@@ -157,11 +155,18 @@ public class PollListActivity extends AppCompatActivity {
                 for (int i = 0; i < choices.length(); ++i) {
                     try {
                         final Button child = new Button(getContext());
+                        child.setEnabled(!p.getEnd().isBeforeNow());
                         child.setText(choices.getJSONObject(i).getString("text"));
                         int finalI = i;
                         child.setOnClickListener((View v) -> {
                             try {
-                                Log.i("Poll", "Choose " + choices.getJSONObject(finalI).getString("uuid"));
+                                final String uuid = choices.getJSONObject(finalI).getString("uuid");
+                                Log.i("Poll", "Choose " + uuid);
+                                pollService.answer(p.getUuid(), uuid).accept(consumable -> {
+                                    Log.i("Poll", "Posted");
+                                }, error -> {
+                                    Log.w("Poll", "Error: " + error.toString());
+                                });
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }

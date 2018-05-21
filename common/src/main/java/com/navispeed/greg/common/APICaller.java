@@ -88,6 +88,7 @@ public class APICaller extends AsyncTask<String, Void, String> {
     }
 
     public static <T> void post(Context c, String endpoint, JSONObject body, Consumer<T> onSuccess, Response.ErrorListener onError, boolean withAuth, Class<T> as) {
+        Log.i("APICaller", String.format("Post %s withBody %s", endpoint, body.toString()));
         withBody(Request.Method.POST, c, endpoint, body, onSuccess, onError, withAuth, as);
     }
 

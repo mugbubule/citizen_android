@@ -6,6 +6,7 @@ import com.android.volley.Response;
 import com.navispeed.greg.common.APICaller;
 import com.navispeed.greg.common.Consumer;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.UUID;
@@ -18,8 +19,10 @@ public class PollService {
     public interface apiConsummer<R> extends BiConsumer<Consumer<R>, Response.ErrorListener> {
     }
 
-    public static final Response.ErrorListener IGNORE = (ignore) -> {};
-    public static final Response.ErrorListener NOT_CONNECTED = (ignore) -> {};
+    public static final Response.ErrorListener IGNORE = (ignore) -> {
+    };
+    public static final Response.ErrorListener NOT_CONNECTED = (ignore) -> {
+    };
 
     public PollService(Context c) {
         this.c = c;
@@ -37,8 +40,15 @@ public class PollService {
         return (Consumer<JSONArray> consumer, Response.ErrorListener onError) -> APICaller.get(c, String.format("/poll/poll/%s/choices", pollUuid), consumer, onError, true, JSONArray.class);
     }
 
-    public apiConsummer<Void> answer(UUID pollUuid, UUID choice) {
-        return null;
-//        return (Consumer<Void> consumer, Response.ErrorListener onError) -> APICaller.post(c, String.format("/poll/poll/%s/choices", pollUuid), new JSONObject(), consumer, onError, true, JSONArray.class);
+    public apiConsummer<Void> answer(UUID pollUuid, String choice) {
+        final JSONObject body = new JSONObject();
+        try {
+            body.put("result", choice);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return (Consumer<Void> consumer, Response.ErrorListener onError) -> {
+            APICaller.post(c, String.format("/poll/poll/%s/results", pollUuid), body, consumer, onError, true, Void.class);
+        };
     }
 }
