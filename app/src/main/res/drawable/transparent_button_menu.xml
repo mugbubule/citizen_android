@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <ressources>
+    <style android:name="transparent_button_menu" >
+        <item android:name="layout_width">match_parent</item>
+        <item android:name="layout_height">wrap_content</item>
+        <item android:name="background">@android:color/transparent"</item>
+        <item android:name="textAlignment">center</item>
+        <item android:name="textColor">#e0e0e0</item>
+        <item android:name="textSize">24sp</item>
+    </style>
+    </ressources>
+
+    <!--<Button
+        android:id="@+id/button"
+            android:text="Button"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:background="@android:color/transparent"
+         android:textAlignment="center"
+         android:textColor="#e0e0e0"
+         android:textSize="24sp"
+        />-->
+</selector>
