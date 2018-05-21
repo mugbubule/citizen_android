@@ -162,11 +162,8 @@ public class PollListActivity extends AppCompatActivity {
                             try {
                                 final String uuid = choices.getJSONObject(finalI).getString("uuid");
                                 Log.i("Poll", "Choose " + uuid);
-                                pollService.answer(p.getUuid(), uuid).accept(consumable -> {
-                                    Log.i("Poll", "Posted");
-                                }, error -> {
-                                    Log.w("Poll", "Error: " + error.toString());
-                                });
+                                pollService.answer(p.getUuid(), uuid).accept(consumable -> Log.i("Poll", "Posted"),
+                                        error -> Log.w("Poll", "Error: " + error.toString()));
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
