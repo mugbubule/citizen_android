@@ -2,7 +2,7 @@ package jonas.emile.poll.activity;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -15,15 +15,21 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.android.volley.VolleyError;
 import com.google.gson.Gson;
 import jonas.emile.poll.PollService;
 import jonas.emile.poll.R;
+import jonas.emile.poll.model.Choice;
 import jonas.emile.poll.model.Poll;
 import org.json.JSONArray;
+import org.json.JSONException;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static jonas.emile.poll.PollService.IGNORE;
 
@@ -44,6 +50,7 @@ public class PollListActivity extends AppCompatActivity {
      */
     private ViewPager mViewPager;
     private PollService pollService;
+//    private FloatingActionButton fab;
 
     @SuppressLint("NewApi")
     @Override
@@ -61,10 +68,9 @@ public class PollListActivity extends AppCompatActivity {
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                .setAction("Action", null).show());
-        fab.setVisibility(View.INVISIBLE);
+//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+//        fab.setOnClickListener(this::switchFabBtn);
+//        fab.setVisibility(View.INVISIBLE);
 
         this.pollService = new PollService(this);
 
@@ -115,6 +121,8 @@ public class PollListActivity extends AppCompatActivity {
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
         private static final String ARG_SECTION_POLL = "section_poll";
+        private Poll p;
+        private List<Choice> choices = new ArrayList<>();
 
         public PlaceholderFragment() {
         }
@@ -132,6 +140,7 @@ public class PollListActivity extends AppCompatActivity {
             return fragment;
         }
 
+        @SuppressLint("NewApi")
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
@@ -141,10 +150,44 @@ public class PollListActivity extends AppCompatActivity {
             TextView content = (TextView) rootView.findViewById(R.id.poll_content);
             title.setText(p.getProposition());
             content.setText(p.getDetails());
-            new PollService(getContext()).getAvailablesChoices(p.getUuid()).accept((choices) -> {
+            LinearLayout layout = (LinearLayout) rootView.findViewById(R.id.poll_response);
+
+            final PollService pollService = new PollService(getContext());
+            pollService.getAvailablesChoices(p.getUuid()).accept((choices) -> {
+                for (int i = 0; i < choices.length(); ++i) {
+                    try {
+                        final Button child = new Button(getContext());
+                        child.setText(choices.getJSONObject(i).getString("text"));
+                        int finalI = i;
+                        child.setOnClickListener((View v) -> {
+                            try {
+                                Log.i("Poll", "Choose " + choices.getJSONObject(finalI).getString("uuid"));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        });
+                        layout.addView(child);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
                 Log.i("PollListActivity", String.format("Got %d for %s", choices.length(), p.getProposition()));
             }, IGNORE);
+            this.p = p;
             return rootView;
+        }
+
+        @Override
+        public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+            LinearLayout layout = (LinearLayout) view.findViewById(R.id.poll_response);
+            layout.setOrientation(LinearLayout.VERTICAL);  //Can also be done in xml by android:orientation="vertical"
+
+            for (Choice choice : this.choices) {
+                final Button child = new Button(view.getContext());
+                child.setText(choice.text);
+                layout.addView(child);
+            }
+            super.onViewCreated(view, savedInstanceState);
         }
     }
 

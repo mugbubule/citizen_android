@@ -3,11 +3,14 @@ package com.navispeed.greg.common;
 
 import android.content.SharedPreferences;
 
+import java.util.Set;
+
 public class StoredData {
     private static StoredData instance = null;
     private SharedPreferences sharedPreferences;
     private String accessToken;
     private String refreshToken;
+    private Set<String> notifications;
 
     private StoredData() {
     }
@@ -21,6 +24,7 @@ public class StoredData {
     public void close() {
         sharedPreferences.edit().putString("accessToken", accessToken).apply();
         sharedPreferences.edit().putString("refreshToken", refreshToken).apply();
+        sharedPreferences.edit().putStringSet("refreshToken", notifications).apply();
     }
 
     public static synchronized StoredData getInstance() {
@@ -38,11 +42,19 @@ public class StoredData {
         return refreshToken;
     }
 
+    public Set<String> getNotifications() {
+        return notifications;
+    }
+
     public void setAccessToken(String accessToken) {
         this.accessToken = accessToken;
     }
 
     public void setRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
+    }
+
+    public void setNotifications(Set<String> notifications) {
+        this.notifications = notifications;
     }
 }

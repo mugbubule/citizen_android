@@ -19,13 +19,14 @@ public class PollService {
     }
 
     public static final Response.ErrorListener IGNORE = (ignore) -> {};
+    public static final Response.ErrorListener NOT_CONNECTED = (ignore) -> {};
 
     public PollService(Context c) {
         this.c = c;
     }
 
     public apiConsummer<JSONArray> getAll() {
-        return (Consumer<JSONArray> consumer, Response.ErrorListener onError) -> APICaller.get(c, "/poll/", consumer, onError, true, JSONArray.class);
+        return (Consumer<JSONArray> consumer, Response.ErrorListener onError) -> APICaller.get(c, "/poll", consumer, onError, true, JSONArray.class);
     }
 
     public apiConsummer<JSONObject> getOne(UUID uuid) {
@@ -34,5 +35,10 @@ public class PollService {
 
     public apiConsummer<JSONArray> getAvailablesChoices(UUID pollUuid) {
         return (Consumer<JSONArray> consumer, Response.ErrorListener onError) -> APICaller.get(c, String.format("/poll/poll/%s/choices", pollUuid), consumer, onError, true, JSONArray.class);
+    }
+
+    public apiConsummer<Void> answer(UUID pollUuid, UUID choice) {
+        return null;
+//        return (Consumer<Void> consumer, Response.ErrorListener onError) -> APICaller.post(c, String.format("/poll/poll/%s/choices", pollUuid), new JSONObject(), consumer, onError, true, JSONArray.class);
     }
 }

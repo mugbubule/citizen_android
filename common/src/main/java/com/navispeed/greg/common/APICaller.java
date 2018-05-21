@@ -144,11 +144,13 @@ public class APICaller extends AsyncTask<String, Void, String> {
         }
     }
 
+    @Deprecated
     public APICaller setHandler(ReceiveData handler) {
         this.handler = handler;
         return this;
     }
 
+    @Deprecated
     protected void onPostExecute(String result) {
         if (result != null) //pitète afficher une erreur de network?
             handler.onReceiveData(result);

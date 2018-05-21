@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import com.navispeed.greg.androidmodularize.R;
+import com.navispeed.greg.androidmodularize.controllers.MainController;
 import com.navispeed.greg.androidmodularize.helpers.ModuleRegister;
 import com.navispeed.greg.common.Module;
 import com.navispeed.greg.common.StoredData;
@@ -14,9 +15,12 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    MainController controller;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.controller = new MainController();
         setContentView(R.layout.activity_main);
         ModuleRegister instance = ModuleRegister.getInstance();
         StoredData.getInstance().init(getSharedPreferences("citizen_data", MODE_PRIVATE));
@@ -43,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
                 MainActivity.this.startActivity(intent);
             });
         }
+        this.controller.init(this);
     }
 
     @Override

@@ -296,6 +296,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         int IS_PRIMARY = 1;
     }
 
+
+
     /**
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
