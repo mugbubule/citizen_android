@@ -5,6 +5,8 @@
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:theme = "@style/AppTheme"
+    android:fitsSystemWindows="true"
     tools:context="com.navispeed.greg.androidmodularize.activities.MainActivity">
 
     <RelativeLayout
