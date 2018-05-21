@@ -2,7 +2,11 @@
     <string name="threads">Discussions</string>
     <string name="threadsCat">Discussions about: %s</string>
     <string name="newThread">Start new discussion</string>
+    <string name="newThreadPrompt">New discussion topic</string>
+    <string name="newThreadErrEmpty">Topic cannot be left empty</string>
+    <string name="newThreadCreationErr">Error: no connection</string>
     <string name="categories">Discussion categories</string>
     <string name="posts">Topic: %s</string>
     <string name="sendPost">Send</string>
+    <string name="categoryFetchError">Error: no connection</string>
 </resources>

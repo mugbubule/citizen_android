@@ -1,21 +1,23 @@
 package jonas.emile.agora;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
+import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.Button;
-
-import com.navispeed.greg.common.APICaller;
-import com.navispeed.greg.common.ReceiveArray;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import static jonas.emile.agora.AgoraModule.MODULE_PATH;
+import jonas.emile.agora.services.CategoryService;
 
 public class AgoraActivity extends AppCompatActivity {
+
+    boolean noCategory = false;
+    CategoryService service = new CategoryService(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,12 +26,20 @@ public class AgoraActivity extends AppCompatActivity {
         getCategories();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (noCategory) {
+            finish();
+        }
+    }
+
     private void getCategories() {
-        APICaller.get(MODULE_PATH + "categories/all", new ReceiveArray() {
-            @Override
-            public void onReceiveData(JSONArray data) {
-                fillCatsLayout(data);
-            }
+        Context c = this;
+        service.getAll().accept(this::fillCatsLayout, error -> {
+            Toast toast = Toast.makeText(c, getText(R.string.categoryFetchError), Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER, 0, 0);
+            toast.show();
         });
     }
 
@@ -52,12 +62,7 @@ public class AgoraActivity extends AppCompatActivity {
                     btn.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                     btn.setText(catsJson.getJSONObject(i).getString("name"));
                     btn.setTag(catsJson.getJSONObject(i).getString("uuid"));
-                    btn.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            selectCategory((String)view.getTag(), (String)((Button)view).getText());
-                        }
-                    });
+                    btn.setOnClickListener(view -> selectCategory((String)view.getTag(), (String)((Button)view).getText()));
                     layout.addView(btn);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -67,6 +72,9 @@ public class AgoraActivity extends AppCompatActivity {
     }
 
     private void selectCategory(String id, String name) {
+        if (id == null) {
+            noCategory = true;
+        }
         Intent intent = new Intent(AgoraActivity.this, CategoryActivity.class);
         intent.putExtra("id", id);
         intent.putExtra("name", name);

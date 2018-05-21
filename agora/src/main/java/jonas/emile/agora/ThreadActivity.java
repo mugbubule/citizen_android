@@ -1,31 +1,28 @@
 package jonas.emile.agora;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.text.Layout;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.navispeed.greg.common.APICaller;
-import com.navispeed.greg.common.ReceiveArray;
-import com.navispeed.greg.common.ReceiveData;
+import com.navispeed.greg.common.utils.PRAutoFetchingActivity;
+import com.navispeed.greg.common.utils.PageRetriever;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import jonas.emile.agora.services.PostService;
+
 import static android.graphics.Color.BLACK;
-import static jonas.emile.agora.AgoraModule.MODULE_PATH;
 
-public class ThreadActivity extends AppCompatActivity {
+public class ThreadActivity extends PRAutoFetchingActivity {
 
-    private static final int pageSize = 10;
-    private int lastFetchedIndex = -1;
-    private int lastTotalSize = pageSize;
-    private String threadId;
+    private static final int PAGE_SIZE = 20;
+
+    private PostService service;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,94 +31,39 @@ public class ThreadActivity extends AppCompatActivity {
         init();
     }
 
+    @Override
+    protected int getAutoFetchFreq() {
+        return 1000;
+    }
+
+    @Override
+    protected PageRetriever initPr() {
+        PageRetriever pr;
+        String threadId = getIntent().getStringExtra("id");
+        final ScrollView scrollView = (ScrollView) findViewById(R.id.postsScrollView);
+        service = new PostService(this, threadId);
+        pr = new PageRetriever(this, PAGE_SIZE, scrollView, (ViewGroup) findViewById(R.id.postsLayout),
+                service, this::addPost);
+        return pr;
+    }
+
     private void init() {
-        threadId = getIntent().getStringExtra("id");
+
         String threadTopic = getIntent().getStringExtra("topic");
         ((TextView) findViewById(R.id.txtPosts)).setText(getResources().getString(R.string.posts, threadTopic));
-        getNextPage();
-    }
+        }
 
-    private void getNewPosts() {
-        APICaller.get("threads/thread/" + threadId + "/posts/count", new ReceiveData() {
-            @Override
-            public void onReceiveData(String data) {
-                int nbPosts = Integer.parseInt(data);
-                getNewPosts(nbPosts);
-            }
+    public void btnClick(View btn) {
+        EditText txtView = (EditText) (findViewById(R.id.editText));
+        String msg = txtView.getText().toString();
+        btn.setEnabled(false);
+        service.sendMessage(msg).accept(consumable -> pr.getNewEntries(retrievalSuccessful -> {
+            txtView.setText("");
+            btn.setEnabled(true);
+        }), error -> {
+            pr.showNetworkErrorMessage();
+            btn.setEnabled(true);
         });
-    }
-
-    private void getNewPosts(int nbPosts) {
-        int nbNewPosts = nbPosts - lastTotalSize;
-        if (lastFetchedIndex != -1 && lastTotalSize < nbPosts) {
-            getPosts(0, nbNewPosts, nbPosts);
-        }
-    }
-
-    private void getNextPage() {
-        APICaller.get("threads/thread/" + threadId + "/posts/count", new ReceiveData() {
-            @Override
-            public void onReceiveData(String data) {
-                int nbPosts = Integer.parseInt(data);
-                // get new posts if there are some
-                getNewPosts(nbPosts);
-                // get next page of old posts
-                if (nbPosts > lastFetchedIndex + 1) {
-                    int pageToGet = (lastFetchedIndex + 1) / pageSize;
-                    getPosts(pageToGet, -1, nbPosts);
-                }
-            }
-        });
-    }
-
-    private void getPosts(final int pageNb, final int newPosts, final int totalSize) {
-        APICaller.get(MODULE_PATH + "thread/" + threadId + "/posts?pageNb=" + pageNb + "&pageSize=" + pageSize,
-                new ReceiveArray() {
-                    @Override
-                    public void onReceiveData(JSONArray data) {
-                        boolean firstLoad = false;
-                        if (lastFetchedIndex == -1) {
-                            firstLoad = true;
-                            ((ViewGroup) findViewById(R.id.postsLayout)).removeAllViews();
-                        }
-                        addPosts(data, newPosts);
-                        lastFetchedIndex += data.length();
-                        lastTotalSize = totalSize;
-                        if (firstLoad) {
-                            // first page might be partial: get next page to have enough posts to show
-                            getNextPage();
-                        }
-                    }
-                });
-    }
-
-    private void addPosts(JSONArray jsonPosts, int newPosts) {
-        ViewGroup layout = (ViewGroup) findViewById(R.id.postsLayout);
-        int start;
-        int end; // not included
-        int inc;
-        if (newPosts > 0) {
-            // adding new posts
-            start = newPosts - 1;
-            end = -1;
-            inc = -1;
-        } else {
-            // adding old posts
-            start = (lastFetchedIndex + 1) % pageSize;
-            end =  jsonPosts.length();
-            inc = 1;
-        }
-        for (int i = start; i != end; i += inc) {
-            try {
-                addPost(layout, jsonPosts.getJSONObject(i), newPosts > 0);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        if (newPosts > 0) {
-            final ScrollView scrollView = (ScrollView) findViewById(R.id.postsScrollView);
-            scrollView.post(new Runnable() { public void run() { scrollView.fullScroll(View.FOCUS_DOWN); } });
-        }
     }
 
     private void addPost(ViewGroup layout, JSONObject jsonPost, boolean addAtEnd) throws JSONException {
@@ -146,9 +88,5 @@ public class ThreadActivity extends AppCompatActivity {
         postText.setText(jsonPost.getString("message"));
         postText.setTextColor(BLACK);
         hv.addView(postText);
-    }
-
-    public void btnClick(View v) {
-        getNewPosts();
     }
 }
