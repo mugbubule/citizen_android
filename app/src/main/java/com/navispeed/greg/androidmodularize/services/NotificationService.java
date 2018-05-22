@@ -5,8 +5,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 import android.util.Pair;
 import com.google.gson.Gson;
@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -60,7 +59,7 @@ public class NotificationService extends IntentService {
             try {
                 Log.i("NotificationService", "Réveil");
                 fetch();
-                process(new Notification(UUID.randomUUID(), UUID.randomUUID(), "title", "content", "2018-05-22 22:00:00", false, "/api"));
+//                process(new Notification(UUID.randomUUID(), UUID.randomUUID(), "title", "content", "2018-05-22 22:00:00", false, "/api"));
                 Thread.sleep(10000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
