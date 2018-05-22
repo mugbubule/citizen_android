@@ -5,10 +5,8 @@ import android.content.Context;
 import com.android.volley.Response;
 import com.navispeed.greg.common.APICaller;
 import com.navispeed.greg.common.Consumer;
-import com.navispeed.greg.common.utils.PagedService;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.function.BiConsumer;
 

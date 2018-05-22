@@ -8,8 +8,8 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.navispeed.greg.common.utils.PRAutoFetchingActivity;
-import com.navispeed.greg.common.utils.PageRetriever;
+import com.navispeed.greg.common.paging.PRAutoFetchingActivity;
+import com.navispeed.greg.common.paging.PageRetriever;
 
 import org.json.JSONException;
 import org.json.JSONObject;

@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">news</string>
+    <string name="fetch_error">No connexion</string>
+    <string name="json_error">Format error. You may need to update the app.</string>
 </resources>
