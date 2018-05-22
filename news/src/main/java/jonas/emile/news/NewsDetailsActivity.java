@@ -54,13 +54,13 @@ public class NewsDetailsActivity extends AppCompatActivity {
             // lays out its children before you call getHitRect()
             @Override
             public void run() {
-                Blurry.with(NewsDetailsActivity.this)
+                /*Blurry.with(NewsDetailsActivity.this)
                         .radius(25)
                         .sampling(1)
                         .color(Color.argb(80, 0, 0, 0))
                         .async()
                         .capture(findViewById(R.id.img))
-                        .into((ImageView) findViewById(R.id.img));
+                        .into((ImageView) findViewById(R.id.img));*/
                 /*Blurry.with(NewsDetailsActivity.this)
                         .radius(25)
                         .sampling(1)
