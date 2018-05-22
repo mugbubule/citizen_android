@@ -64,7 +64,7 @@ public class EventsActivity extends AppCompatActivity {
         DateTime dateTime = DateTime.parse(event.datetime, DateTimeFormat.forPattern("YYYY-MM-DD HH:mm:ss"));
         if (lastEventFetched == null || DateTime.parse(lastEventFetched.datetime, DateTimeFormat.forPattern("YYYY-MM-DD HH:mm:ss")).getMonthOfYear() != dateTime.getMonthOfYear()) {
             TextView txtMonth = new TextView(this);
-            txtMonth.setTextColor(Color.WHITE);
+            txtMonth.setTextColor(Color.BLACK);
             txtMonth.setText(new DateFormatSymbols().getMonths()[dateTime.getMonthOfYear()] + " " + dateTime.getYear());
             txtMonth.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
             eventListLayout.addView(txtMonth);
