@@ -2,12 +2,15 @@ package jonas.emile.agora;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -60,10 +63,20 @@ public class AgoraActivity extends AppCompatActivity {
             layout.removeAllViews();
             for (int i = 0; i < catsJson.length(); ++i) {
                 try {
+                    if (i != 0) {
+                        View hr = new View(this);
+                        hr.setLayoutParams(new LinearLayout.LayoutParams(150, 4));
+                        hr.setPadding(0, 10, 0, 10);
+                        hr.setBackgroundColor(Color.parseColor("#e0e0e0"));
+                        layout.addView(hr);
+                    }
                     Button btn = new Button(this);
                     btn.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                     btn.setText(catsJson.getJSONObject(i).getString("name"));
                     btn.setTag(catsJson.getJSONObject(i).getString("uuid"));
+                    btn.setBackgroundColor(0);
+                    btn.setTextSize(24);
+                    btn.setTextColor(Color.parseColor("#e0e0e0"));
                     btn.setOnClickListener(view -> selectCategory((String)view.getTag(), (String)((Button)view).getText()));
                     layout.addView(btn);
                 } catch (JSONException e) {

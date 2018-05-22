@@ -3,6 +3,8 @@ package jonas.emile.agora;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.Gravity;
@@ -11,16 +13,28 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.navispeed.greg.common.Consumer;
 import com.navispeed.greg.common.paging.PRAutoFetchingActivity;
 import com.navispeed.greg.common.paging.PageRetriever;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Random;
+
+import jonas.emile.agora.services.PostService;
 import jonas.emile.agora.services.ThreadService;
 
 public class CategoryActivity extends PRAutoFetchingActivity {
@@ -42,7 +56,7 @@ public class CategoryActivity extends PRAutoFetchingActivity {
         categoryId = getIntent().getStringExtra("id");
         String categoryName = getIntent().getStringExtra("name");
         if (categoryName != null) {
-            ((TextView) findViewById(R.id.txtDiscussions)).setText(getResources().getString(R.string.threadsCat, categoryName));
+            ((TextView) findViewById(R.id.txtDiscussions)).setText(categoryName);
         } else {
             ((TextView) findViewById(R.id.txtDiscussions)).setText(getResources().getString(R.string.threads));
         }
@@ -63,16 +77,90 @@ public class CategoryActivity extends PRAutoFetchingActivity {
     }
 
     private void addThread(ViewGroup layout, JSONObject jsonThread, boolean addAtEnd) throws JSONException {
-        Button btn = new Button(this);
-        btn.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        btn.setText(jsonThread.getString("topic"));
-        btn.setTag(jsonThread.getString("uuid"));
-        btn.setOnClickListener(view -> selectThread((String) view.getTag(), (String) ((TextView) view).getText()));
+
+        RelativeLayout rl = new RelativeLayout(this);
+        rl.setBackground(getDrawable(R.drawable.background_white_rounded_shadow));
+        rl.setTag(jsonThread);
+        rl.setOnClickListener(view -> {
+            try {
+                selectThread(((JSONObject) view.getTag()).getString("uuid"), ((JSONObject) view.getTag()).getString("topic"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        });
+        LinearLayout.LayoutParams rlPL = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        rlPL.setMargins(16, 16, 16, 16);
+        Point dimensions = new Point();
+        getWindowManager().getDefaultDisplay().getRealSize(dimensions);
+        rlPL.height = dimensions.y / 5;
+        rl.setLayoutParams(rlPL);
         if (addAtEnd) {
-            layout.addView(btn);
+            layout.addView(rl);
         } else {
-            layout.addView(btn, 0);
+            layout.addView(rl, 0);
         }
+
+        TextView txtTopic = new TextView(this);
+        txtTopic.setTextSize(24);
+        txtTopic.setTextColor(Color.BLACK);
+        txtTopic.setText(jsonThread.getString("topic"));
+        RelativeLayout.LayoutParams txtTopicLP = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        txtTopicLP.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+        txtTopicLP.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+        txtTopicLP.setMargins(24, 16, 16, 16);
+        txtTopic.setLayoutParams(txtTopicLP);
+        int txtTopicId = new Random().nextInt();
+        txtTopic.setId(txtTopicId);
+        rl.addView(txtTopic);
+
+        TextView txtDate = new TextView(this);
+        txtDate.setTextColor(Color.BLACK);
+        txtDate.setText(DateTime.parse(jsonThread.getString("created"), DateTimeFormat.forPattern("YYYY-MM-DD HH:mm:ss")).toString("YYYY-MM-DD"));
+        RelativeLayout.LayoutParams txtDateLP = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        txtDateLP.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        txtDateLP.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+        txtDateLP.setMargins(16, 16, 16, 16);
+        txtDate.setLayoutParams(txtDateLP);
+        rl.addView(txtDate);
+
+        LinearLayout postsLayout = new LinearLayout(this);
+        postsLayout.setOrientation(LinearLayout.VERTICAL);
+        RelativeLayout.LayoutParams postsLayoutLP = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        postsLayoutLP.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        postsLayoutLP.addRule(RelativeLayout.BELOW, txtTopicId);
+        postsLayoutLP.setMargins(32, 0, 32, 16);
+        postsLayout.setLayoutParams(postsLayoutLP);
+        rl.addView(postsLayout);
+
+        int nameSize = dimensions.x / 5;
+        Context c = this;
+        PostService postService = new PostService(this, jsonThread.getString("uuid"));
+        postService.getEntries(0, 10).accept(posts -> {
+            for (int i = 0; i < posts.length(); ++i) {
+
+                LinearLayout postLayout = new LinearLayout(c);
+                postLayout.setOrientation(LinearLayout.HORIZONTAL);
+                postsLayout.addView(postLayout);
+
+                try {
+                    TextView txtAuthor = new TextView(c);
+                    LinearLayout.LayoutParams txtAuthorLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    txtAuthorLP.width = nameSize;
+                    txtAuthor.setLayoutParams(txtAuthorLP);
+                    txtAuthor.setText(((JSONObject) posts.get(i)).getString("author") + ":");
+                    postLayout.addView(txtAuthor);
+
+                    TextView txtMessage = new TextView(c);
+                    LinearLayout.LayoutParams txtMessageLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    txtMessage.setLayoutParams(txtMessageLP);
+                    txtMessage.setText(((JSONObject) posts.get(i)).getString("message"));
+                    postLayout.addView(txtMessage);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, error -> {
+        });
     }
 
     private void selectThread(String threadId, String topic) {
