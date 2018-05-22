@@ -156,19 +156,6 @@ public class PollListActivity extends AppCompatActivity {
             content.setText(p.getDetails());
             LinearLayout layout = (LinearLayout) rootView.findViewById(R.id.poll_response);
 
-            rootView.findViewById(R.id.background_poll).post(new Runnable() {
-                @Override
-                public void run() {
-                    Blurry.with(rootView.getContext())
-                            .radius(25)
-                            .sampling(1)
-                            .color(Color.argb(80, 0, 0, 0))
-                            .async()
-                            .animate(5000)
-                            .onto((ViewGroup) rootView.findViewById(R.id.background_poll));
-                }
-            });
-
             final PollService pollService = new PollService(getContext());
             pollService.getAvailablesChoices(p.getUuid()).accept((choices) -> {
                 for (int i = 0; i < choices.length(); ++i) {
@@ -208,6 +195,20 @@ public class PollListActivity extends AppCompatActivity {
                 child.setText(choice.text);
                 layout.addView(child);
             }
+
+            view.findViewById(R.id.background_poll).post(new Runnable() {
+                @Override
+                public void run() {
+                    Blurry.with(view.getContext())
+                            .radius(25)
+                            .sampling(1)
+                            .color(Color.argb(80, 0, 0, 0))
+                            .async()
+                            .animate(5000)
+                            .onto((ViewGroup) view.findViewById(R.id.background_poll));
+                }
+            });
+
             super.onViewCreated(view, savedInstanceState);
         }
     }
