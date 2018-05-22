@@ -17,6 +17,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import jonas.emile.agora.services.CategoryService;
+import jp.wasabeef.blurry.Blurry;
 
 public class AgoraActivity extends AppCompatActivity {
 
@@ -29,6 +30,28 @@ public class AgoraActivity extends AppCompatActivity {
         setContentView(R.layout.activity_agora);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         getCategories();
+
+        findViewById(R.id.background_agora).post(new Runnable() {
+            // Post in the parent's message queue to make sure the parent
+            // lays out its children before you call getHitRect()
+            @Override
+            public void run() {
+                /*Blurry.with(WelcomeActivity.this)
+                        .radius(25)
+                        .sampling(1)
+                        .color(Color.argb(80, 0, 0, 0))
+                        .async()
+                        .capture(findViewById(R.id.imageView2))
+                        .into((ImageView) findViewById(R.id.imageView2));*/
+                Blurry.with(AgoraActivity.this)
+                        .radius(25)
+                        .sampling(1)
+                        .color(Color.argb(80, 0, 0, 0))
+                        .async()
+                        .animate(2000)
+                        .onto((ViewGroup) findViewById(R.id.background_agora));
+            }
+        });
     }
 
     @Override

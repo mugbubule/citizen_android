@@ -36,6 +36,7 @@ import java.util.Random;
 
 import jonas.emile.agora.services.PostService;
 import jonas.emile.agora.services.ThreadService;
+import jp.wasabeef.blurry.Blurry;
 
 public class CategoryActivity extends PRAutoFetchingActivity {
 
@@ -50,6 +51,27 @@ public class CategoryActivity extends PRAutoFetchingActivity {
         setContentView(R.layout.activity_category);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         init();
+        findViewById(R.id.background_category).post(new Runnable() {
+            // Post in the parent's message queue to make sure the parent
+            // lays out its children before you call getHitRect()
+            @Override
+            public void run() {
+                /*Blurry.with(WelcomeActivity.this)
+                        .radius(25)
+                        .sampling(1)
+                        .color(Color.argb(80, 0, 0, 0))
+                        .async()
+                        .capture(findViewById(R.id.imageView2))
+                        .into((ImageView) findViewById(R.id.imageView2));*/
+                Blurry.with(CategoryActivity.this)
+                        .radius(25)
+                        .sampling(1)
+                        .color(Color.argb(80, 0, 0, 0))
+                        .async()
+                        .animate(2000)
+                        .onto((ViewGroup) findViewById(R.id.background_category));
+            }
+        });
     }
 
     private void init() {
