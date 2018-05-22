@@ -8,23 +8,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.navispeed.greg.common.utils.DownloadImageTask;
-
+import jonas.emile.news.models.News;
+import jonas.emile.news.services.NewsService;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import jonas.emile.news.models.News;
-import jonas.emile.news.services.NewsService;
 
 /* Created by jonas_e on 18/11/2017. */
 
@@ -117,11 +113,26 @@ public class NewsActivity extends AppCompatActivity {
         textLayout.addView(textSub);
 
         if (first) {
-            new DownloadImageTask(img, 20).execute("https://jpeg.org/images/jpeg2000-home.jpg"); // TODO change
+            new DownloadImageTask(img, this::blur, 20).execute("https://jpeg.org/images/jpeg2000-home.jpg"); // TODO change
             first = false;
         } else {
-            new DownloadImageTask(img, 20).execute("http://cdn.skim.gs/image/upload/c_fill,dpr_1.0,f_auto,fl_lossy,q_auto,w_940/v1456335851/msi/Yorkshire_Terrier_xkjh7m.jpg"); // TODO change
+            new DownloadImageTask(img, this::blur, 20).execute("http://cdn.skim.gs/image/upload/c_fill,dpr_1.0,f_auto,fl_lossy,q_auto,w_940/v1456335851/msi/Yorkshire_Terrier_xkjh7m.jpg"); // TODO change
         }
+    }
+
+    private void blur() {
+        // Post in the parent's message queue to make sure the parent
+// lays out its children before you call getHitRect()
+//        findViewById(R.id.layout).post(() -> {
+//            Blurry.with(this)
+//                    .radius(25)
+//                    .sampling(1)
+//                    .color(Color.argb(80, 0, 0, 0))
+//                    .async()
+//                    .animate(2000)
+//                    .onto((ViewGroup) findViewById(R.id.layout));
+//        });
+
     }
 
     private void newsClick(News news) {

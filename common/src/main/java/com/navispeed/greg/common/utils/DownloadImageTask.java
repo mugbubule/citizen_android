@@ -11,15 +11,20 @@ import java.io.InputStream;
  * You have to add "<uses-permission android:name="android.permission.INTERNET" />" to the AndroidManifest.xml file.
  */
 public class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+    private final Runnable onSuccess;
     private ImageView bmImage;
     private int roundCorners = 0;
 
     public DownloadImageTask(ImageView bmImage) {
-        this.bmImage = bmImage;
+        this(bmImage, () -> {}, 0);
+    }
+    public DownloadImageTask(ImageView bmImage, Runnable onSuccess) {
+        this(bmImage, onSuccess, 0);
     }
 
-    public DownloadImageTask(ImageView bmImage, int roundCorners) {
+    public DownloadImageTask(ImageView bmImage, Runnable onSuccess, int roundCorners) {
         this.bmImage = bmImage;
+        this.onSuccess = onSuccess;
         this.roundCorners = roundCorners;
     }
 
@@ -68,5 +73,7 @@ public class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         } else {
             bmImage.setImageBitmap(result);
         }
+        onSuccess.run();
+
     }
 }

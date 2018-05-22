@@ -14,7 +14,7 @@ import com.navispeed.greg.androidmodularize.R;
 import com.navispeed.greg.androidmodularize.models.Notification;
 import com.navispeed.greg.common.APICaller;
 import com.navispeed.greg.common.StoredData;
-import com.navispeed.greg.welcome.WelcomeActivity;
+import jonas.emile.news.NewsActivity;
 import org.json.JSONArray;
 
 import java.util.Arrays;
@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -42,7 +43,7 @@ public class NotificationService extends IntentService {
     public NotificationService() {
         super("NotificationService");
         register("Test", "/api", (a, b, c) -> {
-            Intent intent = new Intent(this, WelcomeActivity.class);
+            Intent intent = new Intent(this, NewsActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
             return b.setContentIntent(pendingIntent);
@@ -59,8 +60,8 @@ public class NotificationService extends IntentService {
             try {
                 Log.i("NotificationService", "Réveil");
                 fetch();
-//                process(new Notification(UUID.randomUUID(), UUID.randomUUID(), "title", "content", "2018-05-22 22:00:00", false, "/api"));
-                Thread.sleep(10000);
+                process(new Notification(UUID.randomUUID(), UUID.randomUUID(), "Nouvelle actualité", "", "2018-05-22 22:00:00", false, "/api"));
+                Thread.sleep(60000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -81,7 +82,7 @@ public class NotificationService extends IntentService {
     }
 
     private void process(Notification notification) {
-         android.support.v4.app.NotificationCompat.Builder nouvelle = new NotificationCompat.Builder(this)
+        android.support.v4.app.NotificationCompat.Builder nouvelle = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.orleans)
                 .setContentTitle(notification.getTitle())
                 .setContentText(notification.getContent())

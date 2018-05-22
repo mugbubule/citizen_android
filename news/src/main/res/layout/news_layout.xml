@@ -11,10 +11,22 @@
     android:scrollbarStyle="insideOverlay"
     android:stretchMode="columnWidth">
 
+
     <LinearLayout
         android:id="@+id/layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"></LinearLayout>
+        android:orientation="vertical">
+
+        <!--<ProgressBar-->
+            <!--android:id="@+id/progressBar1"-->
+            <!--style="?android:attr/progressBarStyleLarge"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:gravity="center" />-->
+    </LinearLayout>
+
+
+
 </ScrollView>
 

@@ -6,14 +6,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.view.Gravity;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.navispeed.greg.common.utils.DownloadImageTask;
-
 import jonas.emile.news.models.News;
 import jonas.emile.news.services.NewsService;
 import jp.wasabeef.blurry.Blurry;
