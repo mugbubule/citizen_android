@@ -67,6 +67,7 @@ public class EventsActivity extends AppCompatActivity {
             txtMonth.setTextColor(Color.BLACK);
             txtMonth.setText(new DateFormatSymbols().getMonths()[dateTime.getMonthOfYear()] + " " + dateTime.getYear());
             txtMonth.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            txtMonth.setGravity(Gravity.CENTER);
             eventListLayout.addView(txtMonth);
             lastEventFetched = event;
         }
