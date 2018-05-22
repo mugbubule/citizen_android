@@ -105,8 +105,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
-
-        /*findViewById(R.id.background_login).post(new Runnable() {
+        findViewById(R.id.background_login).post(new Runnable() {
             @Override
             public void run() {
                 Blurry.with(LoginActivity.this)
@@ -117,7 +116,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         .animate(5000)
                         .onto((ViewGroup) findViewById(R.id.background_login));
             }
-        });*/
+        });
     }
 
     private void populateAutoComplete() {
