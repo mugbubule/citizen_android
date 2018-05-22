@@ -6,6 +6,20 @@
     android:layout_height="match_parent"
     tools:context=".ThreadActivity">
 
+    <RelativeLayout
+        android:id="@+id/background_thread"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/img"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            app:srcCompat="@drawable/orleans" />
+
+    </RelativeLayout>
+
     <ScrollView
         android:id="@+id/postsScrollView"
         android:layout_width="0dp"

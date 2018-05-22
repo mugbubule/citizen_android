@@ -7,7 +7,7 @@
     tools:context=".AgoraActivity">
 
     <RelativeLayout
-        android:id="@+id/background_news_details"
+        android:id="@+id/background_agora"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
