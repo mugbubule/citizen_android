@@ -88,9 +88,18 @@ public class PollListActivity extends AppCompatActivity {
             Log.w("PollActivity", String.format("Something got wrong, code %d", error.networkResponse.statusCode));
         });
 
+        findViewById(R.id.background_poll).post(() -> {
+            Blurry.with(this)
+                    .radius(25)
+                    .sampling(1)
+                    .color(Color.argb(80, 0, 0, 0))
+                    .async()
+                    .animate(5000)
+                    .onto((ViewGroup) findViewById(R.id.background_poll));
+        });
+
 
     }
-
 
 
     @Override
@@ -195,20 +204,6 @@ public class PollListActivity extends AppCompatActivity {
                 child.setText(choice.text);
                 layout.addView(child);
             }
-
-            view.findViewById(R.id.background_poll).post(new Runnable() {
-                @Override
-                public void run() {
-                    Blurry.with(view.getContext())
-                            .radius(25)
-                            .sampling(1)
-                            .color(Color.argb(80, 0, 0, 0))
-                            .async()
-                            .animate(5000)
-                            .onto((ViewGroup) view.findViewById(R.id.background_poll));
-                }
-            });
-
             super.onViewCreated(view, savedInstanceState);
         }
     }
