@@ -12,9 +12,9 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.navispeed.greg.common.utils.DownloadImageTask;
-
+import jonas.emile.events.models.Event;
+import jonas.emile.events.services.EventsService;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.json.JSONException;
@@ -23,9 +23,6 @@ import org.json.JSONObject;
 import java.text.DateFormatSymbols;
 import java.util.ArrayList;
 import java.util.List;
-
-import jonas.emile.events.models.Event;
-import jonas.emile.events.services.EventsService;
 
 /* Created by jonas_e on 18/11/2017. */
 
@@ -130,10 +127,10 @@ public class EventsActivity extends AppCompatActivity {
         textLayout.addView(textSub);
 
         if (first) {
-            new DownloadImageTask(img, () -> {}, 20).execute("https://cn.bing.com/images/search?view=detailV2&ccid=vjXbt5il&id=4FEB2FE7D9B056705AB8850BE099DE358D0F3EDC&thid=OIP.vjXbt5ilwGztEii_4l2OeQHaFj&mediaurl=http%3a%2f%2fcdn.architecturendesign.net%2fwp-content%2fuploads%2f2014%2f08%2f225.jpg&exph=900&expw=1200&q=Beautiful+building&simid=608028532314672905&selectedIndex=1"); // TODO change
+            new DownloadImageTask(img, () -> {}, 20).execute("http://4.bp.blogspot.com/-c8Tnsoq1IjE/UDsk0cpg2GI/AAAAAAAAISA/r36wSAKwexU/s1600/Night+City+Glow+Wallpapers+1.jpg"); // TODO change
             first = false;
         } else {
-            new DownloadImageTask(img, () -> {}, 20).execute("https://cn.bing.com/images/search?view=detailV2&ccid=Erm%2bsS6w&id=BECB915300E728C883305ADFB0E0E056B6141843&thid=OIP.Erm-sS6wQBc1Qto9MZGidwHaE8&mediaurl=http%3a%2f%2fanimals.loepr.com%2fwp-content%2fuploads%2f2013%2f09%2fCute-Animals-Photographs-2.jpg&exph=683&expw=1024&q=Beautiful+Animals&simid=608017412636803590&selectedIndex=5"); // TODO change
+            new DownloadImageTask(img, () -> {}, 20).execute("http://www.highreshdwallpapers.com/wp-content/uploads/2011/09/Epic-High-Definition-City-Wallpaper.jpg"); // TODO change
         }
     }
 
