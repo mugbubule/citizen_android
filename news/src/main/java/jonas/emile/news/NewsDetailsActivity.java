@@ -3,7 +3,9 @@ package jonas.emile.news;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
 import android.view.Gravity;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,6 +25,8 @@ public class NewsDetailsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_details);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+
         newsUuid = getIntent().getStringExtra("newsUuid");
         service = new NewsService(this);
         fetchDetails();
@@ -43,7 +47,8 @@ public class NewsDetailsActivity extends AppCompatActivity {
     private void displayDetails() {
         ((TextView) findViewById(R.id.txtTitle)).setText(news.title);
         ((TextView) findViewById(R.id.txtSubtitle)).setText(news.subtitle);
-        ((TextView) findViewById(R.id.txtContent)).setText(news.content);
-        new DownloadImageTask(((ImageView) findViewById(R.id.img))).execute("http://cdn.skim.gs/image/upload/c_fill,dpr_1.0,f_auto,fl_lossy,q_auto,w_940/v1456335851/msi/Yorkshire_Terrier_xkjh7m.jpg"); // TODO change
+        ((TextView) findViewById(R.id.txtContent)).setText(Html.fromHtml((news.content), Html.FROM_HTML_MODE_COMPACT));
+        new DownloadImageTask(((ImageView) findViewById(R.id.img))).execute("http://cdn.skim.gs/image/upload/c_fill,dpr_1.0,f_auto,fl_lossy,q_auto,w_940/v1456335851/msi/Yorkshire_Terrier_xkjh7m.jpg");
+
     }
 }
