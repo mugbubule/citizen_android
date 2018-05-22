@@ -7,18 +7,7 @@
     tools:context="jonas.emile.login.LoginActivity">
 
     <!-- Login progress -->
-    <RelativeLayout
-        android:id="@+id/background_login"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
 
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:scaleType="centerCrop"
-            android:src="@drawable/orleans" />
-    </RelativeLayout>
 
     <ProgressBar
         android:id="@+id/login_progress"
