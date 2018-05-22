@@ -1,127 +1,98 @@
 package com.navispeed.greg.androidmodularize.services;
 
-import android.app.Notification;
+import android.app.IntentService;
 import android.app.PendingIntent;
-import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.IBinder;
-import android.os.Looper;
-import android.os.Message;
-import android.os.Process;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Toast;
+import android.util.Pair;
+import com.google.gson.Gson;
 import com.navispeed.greg.androidmodularize.R;
-import com.navispeed.greg.androidmodularize.activities.MainActivity;
+import com.navispeed.greg.androidmodularize.models.Notification;
 import com.navispeed.greg.common.APICaller;
+import com.navispeed.greg.common.StoredData;
+import com.navispeed.greg.welcome.WelcomeActivity;
+import org.json.JSONArray;
 
-public class NotificationService extends Service {
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-    APICaller api;
+import static com.navispeed.greg.common.APICaller.IGNORE;
+
+public class NotificationService extends IntentService {
+
+    public static interface NotificationEvent {
+        NotificationCompat.Builder consume(Context context, android.support.v4.app.NotificationCompat.Builder nBuilder, String[] params);
+    }
+
+    private static HashMap<String, Pair<String, NotificationEvent>> notificationEventMap = new HashMap<>();
+    private HashMap<Integer, Notification> notificationSent = new HashMap<>();
 
     /**
      * Creates an IntentService.  Invoked by your subclass's constructor.
      */
     public NotificationService() {
-        super();
-        this.api = new APICaller();
+        super("NotificationService");
+        register("Test", "/api", (a, b, c) -> {
+            Intent intent = new Intent(this, WelcomeActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+            return b.setContentIntent(pendingIntent);
+        });
     }
 
-    private Looper mServiceLooper;
-    private ServiceHandler mServiceHandler;
-
-    // Handler that receives messages from the thread
-    private final class ServiceHandler extends Handler {
-        public ServiceHandler(Looper looper) {
-            super(looper);
-        }
-        @Override
-        public void handleMessage(Message msg) {
-            // Normally we would do some work here, like download a file.
-            // For our sample, we just sleep for 5 seconds.
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                // Restore interrupt status.
-                Thread.currentThread().interrupt();
-            }
-            // Stop the service using the startId, so that we don't stop
-            // the service in the middle of handling another job
-            stopSelf(msg.arg1);
-        }
+    public static void register(String title, String endpointPattern, NotificationEvent onReceive) {
+        notificationEventMap.put(endpointPattern, new Pair<>(title, onReceive));
     }
 
     @Override
-    public void onCreate() {
-        // Start up the thread running the service. Note that we create a
-        // separate thread because the service normally runs in the process's
-        // main thread, which we don't want to block. We also make it
-        // background priority so CPU-intensive work doesn't disrupt our UI.
-        HandlerThread thread = new HandlerThread("ServiceStartArguments",
-                Process.THREAD_PRIORITY_BACKGROUND);
-        thread.start();
-
-        // Get the HandlerThread's Looper and use it for our Handler
-        mServiceLooper = thread.getLooper();
-        mServiceHandler = new ServiceHandler(mServiceLooper);
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        Toast.makeText(this, "service starting", Toast.LENGTH_SHORT).show();
-
-        // For each start request, send a message to start a job and deliver the
-        // start ID so we know which request we're stopping when we finish the job
-        Message msg = mServiceHandler.obtainMessage();
-        msg.arg1 = startId;
-        mServiceHandler.sendMessage(msg);
-
-        // If we get killed, after returning from here, restart
-        return START_STICKY;
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        // We don't provide binding, so return null
-        return null;
-    }
-
-    @Override
-    public void onDestroy() {
-        Toast.makeText(this, "service done", Toast.LENGTH_SHORT).show();
-    }
-
-
     protected void onHandleIntent(@Nullable Intent intent) {
-        Log.i("Notification", "Yolo");
-
-//        try {
-//            Thread.sleep(10000);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-
-        Log.i("Notification", "Yolo");
-        Intent notificationIntent = new Intent(this, MainActivity.class);
-        PendingIntent pendingIntent =
-                PendingIntent.getActivity(this, 0, notificationIntent, 0);
-
-        Notification notification =
-                new Notification.Builder(this)
-                        .setContentTitle("toto")
-                        .setContentText("toto")
-                        .setSmallIcon(R.drawable.sample_0)
-                        .setContentIntent(pendingIntent)
-                        .setTicker("toto")
-                        .build();
-
-        startForeground(42, notification);
-
+        while (true) {
+            try {
+                Log.i("NotificationService", "Réveil");
+                fetch();
+                process(new Notification(UUID.randomUUID(), UUID.randomUUID(), "title", "content", "2018-05-22 22:00:00", false, "/api"));
+                Thread.sleep(10000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
-    private void showNotification() {
+    private void fetch() {
+        APICaller.get(this, "/api/notification/unread", (res) -> {
+            Log.i("NotificationService", String.format("Receive %d", res.length()));
+            final Set<String> oldNotification = StoredData.getInstance().getNotifications();
+            final Notification[] notifications = new Gson().fromJson(res.toString(), Notification[].class);
+            final Stream<Notification> notificationStream = Arrays.stream(notifications).filter(n -> !oldNotification.contains(n.getUuid()));
 
+            notificationStream.forEach(this::process);
+
+            StoredData.getInstance().setNotifications(Arrays.stream(notifications).map(n -> n.getUuid().toString()).collect(Collectors.toSet()));
+        }, IGNORE, true, JSONArray.class);
+    }
+
+    private void process(Notification notification) {
+         android.support.v4.app.NotificationCompat.Builder nouvelle = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.orleans)
+                .setContentTitle(notification.getTitle())
+                .setContentText(notification.getContent())
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+        final Optional<Map.Entry<String, Pair<String, NotificationEvent>>> first = notificationEventMap.entrySet().stream().filter(c -> notification.getUrl().matches(c.getKey())).findFirst();
+        if (!first.isPresent()) {
+            return;
+        }
+        nouvelle = first.get().getValue().second.consume(this, nouvelle, new String[]{});
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        notificationManager.notify(this.notificationSent.size() + 1, nouvelle.build());
     }
 }

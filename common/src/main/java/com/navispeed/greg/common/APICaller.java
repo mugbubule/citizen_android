@@ -25,6 +25,11 @@ import java.util.Map;
 
 public class APICaller extends AsyncTask<String, Void, String> {
 
+    public static final Response.ErrorListener IGNORE = (ignore) -> {
+    };
+    public static final Response.ErrorListener NOT_CONNECTED = (ignore) -> {
+    };
+
     private static String API_URL = "https://citizen.navispeed.eu/api";
 
     private ReceiveData handler;
@@ -68,11 +73,6 @@ public class APICaller extends AsyncTask<String, Void, String> {
         }
     }
 
-    @Deprecated
-    public static void get(String endpoint, ReceiveData handler) {
-        new APICaller().setHandler(handler).get(endpoint);
-    }
-
     public static <T> void get(Context c, String endpoint, Consumer<T> onSuccess, Response.ErrorListener onError, boolean withAuth, Class<T> as) {
         RequestQueue queue = Volley.newRequestQueue(c);
 
@@ -93,10 +93,12 @@ public class APICaller extends AsyncTask<String, Void, String> {
     }
 
     public static <T> void put(Context c, String endpoint, JSONObject body, Consumer<T> onSuccess, Response.ErrorListener onError, boolean withAuth, Class<T> as) {
+        Log.i("APICaller", String.format("Put %s withBody %s", endpoint, body.toString()));
         withBody(Request.Method.PUT, c, endpoint, body, onSuccess, onError, withAuth, as);
     }
 
     public static <T> void delete(Context c, String endpoint, JSONObject body, Consumer<T> onSuccess, Response.ErrorListener onError, boolean withAuth, Class<T> as) {
+        Log.i("APICaller", String.format("Delete %s withBody %s", endpoint, body.toString()));
         withBody(Request.Method.PUT, c, endpoint, body, onSuccess, onError, withAuth, as);
     }
 
@@ -116,10 +118,16 @@ public class APICaller extends AsyncTask<String, Void, String> {
     }
 
     @Deprecated
+    public static void get(String endpoint, ReceiveData handler) {
+        new APICaller().setHandler(handler).get(endpoint);
+    }
+
+    @Deprecated
     public void get(String endpoint) {
         execute(API_URL + (endpoint.startsWith("/") ? endpoint : "/" + endpoint), "GET");
     }
 
+    @Deprecated
     @Override
     protected String doInBackground(String... params) {
         try {

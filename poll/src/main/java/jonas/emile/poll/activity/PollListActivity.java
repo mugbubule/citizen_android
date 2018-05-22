@@ -26,7 +26,6 @@ import jonas.emile.poll.R;
 import jonas.emile.poll.model.Choice;
 import jonas.emile.poll.model.Poll;
 import jp.wasabeef.blurry.Blurry;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -34,7 +33,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static jonas.emile.poll.PollService.IGNORE;
+import static com.navispeed.greg.common.APICaller.IGNORE;
 
 public class PollListActivity extends AppCompatActivity {
 
@@ -89,19 +88,10 @@ public class PollListActivity extends AppCompatActivity {
             Log.w("PollActivity", String.format("Something got wrong, code %d", error.networkResponse.statusCode));
         });
 
-        findViewById(R.id.background_poll).post(new Runnable() {
-            @Override
-            public void run() {
-                Blurry.with(PollListActivity.this)
-                        .radius(25)
-                        .sampling(1)
-                        .color(Color.argb(80, 0, 0, 0))
-                        .async()
-                        .animate(5000)
-                        .onto((ViewGroup) findViewById(R.id.background_poll));
-            }
-        });
+
     }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -165,6 +155,19 @@ public class PollListActivity extends AppCompatActivity {
             title.setText(String.format("%s%s", p.getEnd().isBeforeNow() ? "[Terminé] " : "", p.getProposition()));
             content.setText(p.getDetails());
             LinearLayout layout = (LinearLayout) rootView.findViewById(R.id.poll_response);
+
+            rootView.findViewById(R.id.background_poll).post(new Runnable() {
+                @Override
+                public void run() {
+                    Blurry.with(rootView.getContext())
+                            .radius(25)
+                            .sampling(1)
+                            .color(Color.argb(80, 0, 0, 0))
+                            .async()
+                            .animate(5000)
+                            .onto((ViewGroup) rootView.findViewById(R.id.background_poll));
+                }
+            });
 
             final PollService pollService = new PollService(getContext());
             pollService.getAvailablesChoices(p.getUuid()).accept((choices) -> {

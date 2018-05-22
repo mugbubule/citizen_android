@@ -54,4 +54,17 @@ public class Notification {
     public String getUrl() {
         return url;
     }
+
+    @Override
+    public String toString() {
+        return "Notification{" +
+                "uuid=" + uuid +
+                ", userUUID=" + userUUID +
+                ", title='" + title + '\'' +
+                ", content='" + content + '\'' +
+                ", created='" + created + '\'' +
+                ", viewed=" + viewed +
+                ", url='" + url + '\'' +
+                '}';
+    }
 }

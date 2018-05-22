@@ -19,10 +19,7 @@ public class PollService {
     public interface apiConsummer<R> extends BiConsumer<Consumer<R>, Response.ErrorListener> {
     }
 
-    public static final Response.ErrorListener IGNORE = (ignore) -> {
-    };
-    public static final Response.ErrorListener NOT_CONNECTED = (ignore) -> {
-    };
+
 
     public PollService(Context c) {
         this.c = c;
