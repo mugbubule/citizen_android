@@ -72,7 +72,7 @@ public class NotificationService extends IntentService {
             Log.i("NotificationService", String.format("Receive %d", res.length()));
             final Set<String> oldNotification = StoredData.getInstance().getNotifications();
             final Notification[] notifications = new Gson().fromJson(res.toString(), Notification[].class);
-            final Stream<Notification> notificationStream = Arrays.stream(notifications).filter(n -> !oldNotification.contains(n.getUuid()));
+            final Stream<Notification> notificationStream = Arrays.stream(notifications).filter(n -> !oldNotification.contains(n.getUuid().toString()));
 
             notificationStream.forEach(this::process);
 

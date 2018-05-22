@@ -99,8 +99,6 @@ public class PollListActivity extends AppCompatActivity {
                     .animate(5000)
                     .onto((ViewGroup) findViewById(R.id.background_poll));
         });
-
-
     }
 
 
