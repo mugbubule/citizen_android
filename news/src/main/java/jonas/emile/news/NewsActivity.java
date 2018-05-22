@@ -52,7 +52,7 @@ public class NewsActivity extends AppCompatActivity {
         }, error -> showMessage(R.string.fetch_error));
     }
 
-    boolean first = true; // TODO remove
+    int first = 0; // TODO remove
     private void addNews(News news) {
 
         newsList.add(news);
@@ -112,12 +112,14 @@ public class NewsActivity extends AppCompatActivity {
         textSub.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
         textLayout.addView(textSub);
 
-        if (first) {
+        if (first == 0) {
             new DownloadImageTask(img, this::blur, 20).execute("https://jpeg.org/images/jpeg2000-home.jpg"); // TODO change
-            first = false;
-        } else {
+        } else if (first == 1) {
             new DownloadImageTask(img, this::blur, 20).execute("http://cdn.skim.gs/image/upload/c_fill,dpr_1.0,f_auto,fl_lossy,q_auto,w_940/v1456335851/msi/Yorkshire_Terrier_xkjh7m.jpg"); // TODO change
+        } else {
+            new DownloadImageTask(img, this::blur, 20).execute("https://animalsadda.com/wp-content/uploads/2013/07/Asian-Palm-Civet-4.jpg"); // TODO change
         }
+        first++;
     }
 
     private void blur() {

@@ -44,11 +44,16 @@ public class NewsDetailsActivity extends AppCompatActivity {
         });
     }
 
+    static int i = 0;
     private void displayDetails() {
         ((TextView) findViewById(R.id.txtTitle)).setText(news.title);
         ((TextView) findViewById(R.id.txtSubtitle)).setText(news.subtitle);
         ((TextView) findViewById(R.id.txtContent)).setText(Html.fromHtml((news.content), Html.FROM_HTML_MODE_COMPACT));
-        new DownloadImageTask(((ImageView) findViewById(R.id.img))).execute("http://cdn.skim.gs/image/upload/c_fill,dpr_1.0,f_auto,fl_lossy,q_auto,w_940/v1456335851/msi/Yorkshire_Terrier_xkjh7m.jpg");
+        if (i == 0)
+            new DownloadImageTask(((ImageView) findViewById(R.id.img))).execute("http://cdn.skim.gs/image/upload/c_fill,dpr_1.0,f_auto,fl_lossy,q_auto,w_940/v1456335851/msi/Yorkshire_Terrier_xkjh7m.jpg");
+        else
+            new DownloadImageTask(((ImageView) findViewById(R.id.img))).execute("https://www.animalaid.org.uk/wp-content/uploads/2016/08/lamb-iStock-copy-767x655.jpg");
+        i++;
         findViewById(R.id.img).post(new Runnable() {
             // Post in the parent's message queue to make sure the parent
             // lays out its children before you call getHitRect()

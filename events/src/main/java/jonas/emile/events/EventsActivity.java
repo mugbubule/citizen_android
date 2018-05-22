@@ -56,7 +56,7 @@ public class EventsActivity extends AppCompatActivity {
         }, error -> showMessage(R.string.fetch_error));
     }
 
-    boolean first = true; // TODO remove
+    int first = 0; // TODO remove
     private void addEvent(Event event) {
 
         eventList.add(event);
@@ -126,12 +126,14 @@ public class EventsActivity extends AppCompatActivity {
         textSub.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
         textLayout.addView(textSub);
 
-        if (first) {
+        if (first == 0) {
             new DownloadImageTask(img, () -> {}, 20).execute("http://4.bp.blogspot.com/-c8Tnsoq1IjE/UDsk0cpg2GI/AAAAAAAAISA/r36wSAKwexU/s1600/Night+City+Glow+Wallpapers+1.jpg"); // TODO change
-            first = false;
-        } else {
+        } else if (first == 1) {
             new DownloadImageTask(img, () -> {}, 20).execute("http://www.highreshdwallpapers.com/wp-content/uploads/2011/09/Epic-High-Definition-City-Wallpaper.jpg"); // TODO change
+        } else {
+            new DownloadImageTask(img, () -> {}, 20).execute("http://2.bp.blogspot.com/-z6zZ2ZeUWG0/UDsmg9pHH5I/AAAAAAAAITI/xInXSA8LElk/s1600/Night+City+Glow+Wallpapers.jpg"); // TODO change
         }
+        first++;
     }
 
     private void eventClick(Event event) {
