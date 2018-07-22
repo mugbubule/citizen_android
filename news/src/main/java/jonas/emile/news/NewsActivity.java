@@ -131,7 +131,7 @@ public class NewsActivity extends AppCompatActivity {
 //                    .sampling(1)
 //                    .color(Color.argb(80, 0, 0, 0))
 //                    .async()
-//                    .animate(2000)
+//                    .animate(1000)
 //                    .onto((ViewGroup) findViewById(R.id.layout));
 //        });
 

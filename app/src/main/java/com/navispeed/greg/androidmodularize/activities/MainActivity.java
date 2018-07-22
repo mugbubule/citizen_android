@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
 
         Animation fadeIn = new AlphaAnimation(0, 1);
         fadeIn.setInterpolator(new DecelerateInterpolator());
-        fadeIn.setDuration(5000);
+        fadeIn.setDuration(1000);
         layout.setAnimation(fadeIn);
 
         findViewById(R.id.background_landing).post(new Runnable() {
@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
                         .sampling(1)
                         .color(Color.argb(80, 0, 0, 0))
                         .async()
-                        .animate(5000)
+                        .animate(1000)
                         .onto((ViewGroup) findViewById(R.id.background_landing));
             }
         });

@@ -59,8 +59,8 @@ public class PollListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_poll_list);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        setContentView(R.layout.activity_poll_list);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -96,7 +96,7 @@ public class PollListActivity extends AppCompatActivity {
                     .sampling(1)
                     .color(Color.argb(80, 0, 0, 0))
                     .async()
-                    .animate(5000)
+                    .animate(1000)
                     .onto((ViewGroup) findViewById(R.id.background_poll));
         });
     }
@@ -172,6 +172,8 @@ public class PollListActivity extends AppCompatActivity {
                         final Button child = new Button(getContext());
                         child.setEnabled(!p.getEnd().isBeforeNow());
                         child.setText(choices.getJSONObject(i).getString("text"));
+                        child.setBackgroundResource(R.drawable.background_white_rounded_shadow);
+                        child.setTextColor(Color.parseColor("#e0e0e0"));
                         int finalI = i;
                         child.setOnClickListener((View v) -> {
                             try {

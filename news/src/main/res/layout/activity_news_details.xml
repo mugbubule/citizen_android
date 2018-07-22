@@ -52,6 +52,7 @@
                     android:text="TextView"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textColor="#e0e0e0"
+                    android:textSize="24sp"
                     app:layout_constraintStart_toStartOf="parent" />
 
                 <LinearLayout
@@ -70,7 +71,8 @@
                         android:layout_margin="10dp"
                         android:text="Con tent content co nt en t c o n t e n tCon tent content co nt en t c o n t e n t Con tent content co nt en t c o n t e n t Con tent content co nt en t c o n t e n t Con tent content co nt en t c o n t e n t Con tent content co nt en t c o n t e n tCon tent content co nt en t c o n t e n t Con tent content co nt en t c o n t e n t Con tent content co nt en t c o n t e n t Con tent content co nt en t c o n t e n t Con tent content co nt en t c o n t e n t   "
                         android:textAlignment="textStart"
-                        android:textColor="#212121"
+                        android:textColor="#e0e0e0"
+                        android:textSize="18sp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/txtSubtitle" />
                 </LinearLayout>

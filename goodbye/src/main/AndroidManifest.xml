@@ -8,5 +8,4 @@
         android:supportsRtl="true">
         <activity android:name=".GoodbyeActivity" />
     </application>
-
 </manifest>

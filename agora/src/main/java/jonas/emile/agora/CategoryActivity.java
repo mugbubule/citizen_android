@@ -68,7 +68,7 @@ public class CategoryActivity extends PRAutoFetchingActivity {
                         .sampling(1)
                         .color(Color.argb(80, 0, 0, 0))
                         .async()
-                        .animate(2000)
+                        .animate(1000)
                         .onto((ViewGroup) findViewById(R.id.background_category));
             }
         });
@@ -124,7 +124,7 @@ public class CategoryActivity extends PRAutoFetchingActivity {
 
         TextView txtTopic = new TextView(this);
         txtTopic.setTextSize(24);
-        txtTopic.setTextColor(Color.BLACK);
+        txtTopic.setTextColor(Color.parseColor("#e0e0e0"));
         txtTopic.setText(jsonThread.getString("topic"));
         RelativeLayout.LayoutParams txtTopicLP = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         txtTopicLP.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
@@ -136,7 +136,7 @@ public class CategoryActivity extends PRAutoFetchingActivity {
         rl.addView(txtTopic);
 
         TextView txtDate = new TextView(this);
-        txtDate.setTextColor(Color.BLACK);
+        txtDate.setTextColor(Color.parseColor("#e0e0e0"));
         txtDate.setText(DateTime.parse(jsonThread.getString("created"), DateTimeFormat.forPattern("YYYY-MM-DD HH:mm:ss")).toString("YYYY-MM-DD"));
         RelativeLayout.LayoutParams txtDateLP = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         txtDateLP.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
@@ -169,12 +169,14 @@ public class CategoryActivity extends PRAutoFetchingActivity {
                     LinearLayout.LayoutParams txtAuthorLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                     txtAuthorLP.width = nameSize;
                     txtAuthor.setLayoutParams(txtAuthorLP);
+                    txtAuthor.setTextColor(Color.parseColor("#e0e0e0"));;
                     txtAuthor.setText(((JSONObject) posts.get(i)).getString("author") + ":");
                     postLayout.addView(txtAuthor);
 
                     TextView txtMessage = new TextView(c);
                     LinearLayout.LayoutParams txtMessageLP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                     txtMessage.setLayoutParams(txtMessageLP);
+                    txtMessage.setTextColor(Color.parseColor("#e0e0e0"));
                     txtMessage.setText(((JSONObject) posts.get(i)).getString("message"));
                     postLayout.addView(txtMessage);
                 } catch (JSONException e) {

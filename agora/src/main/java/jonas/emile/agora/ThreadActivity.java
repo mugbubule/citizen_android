@@ -50,7 +50,7 @@ public class ThreadActivity extends PRAutoFetchingActivity {
                         .sampling(1)
                         .color(Color.argb(80, 0, 0, 0))
                         .async()
-                        .animate(2000)
+                        .animate(1000)
                         .onto((ViewGroup) findViewById(R.id.background_thread));
             }
         });

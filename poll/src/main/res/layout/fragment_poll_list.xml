@@ -45,7 +45,7 @@
                 android:layout_margin="10dp"
                 android:text="Con tent content co nt en t c o n t e n tCon tent content co nt en t c o n t e n t Con tent content co nt en t c o n t e n t Con tent content co nt en t c o n t e n t Con tent content co nt en t c o n t e n t Con tent content co nt en t c o n t e n tCon tent content co nt en t c o n t e n t Con tent content co nt en t c o n t e n t Con tent content co nt en t c o n t e n t Con tent content co nt en t c o n t e n t Con tent content co nt en t c o n t e n t   "
                 android:textAlignment="textStart"
-                android:textColor="#212121" />
+                android:textColor="#e0e0e0" />
         </LinearLayout>
 
         <ScrollView
