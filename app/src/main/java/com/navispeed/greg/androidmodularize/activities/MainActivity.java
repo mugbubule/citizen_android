@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
         TextView cityName = new TextView(this);
         cityName.setText(R.string.app_name); //change to cityname
-        cityName.setText("Orléans");
+        cityName.setText("Villiers-le-Morhier");
         cityName.setTextSize(42);
         cityName.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         cityName.setTextColor(Color.parseColor("#e0e0e0"));
