@@ -69,7 +69,7 @@ public class NotificationService extends IntentService {
     }
 
     private void fetch() {
-        APICaller.get(this, "/api/notification/unread", (res) -> {
+        APICaller.get(this, "/notification/unread", (res) -> {
             Log.i("NotificationService", String.format("Receive %d", res.length()));
             final Set<String> oldNotification = StoredData.getInstance().getNotifications();
             final Notification[] notifications = new Gson().fromJson(res.toString(), Notification[].class);

@@ -52,7 +52,7 @@ public class Notification {
     }
 
     public String getUrl() {
-        return url;
+        return url != null ? url : "";
     }
 
     @Override

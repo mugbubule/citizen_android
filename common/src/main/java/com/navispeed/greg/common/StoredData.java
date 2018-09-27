@@ -3,6 +3,7 @@ package com.navispeed.greg.common;
 
 import android.content.SharedPreferences;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class StoredData {
@@ -43,6 +44,8 @@ public class StoredData {
     }
 
     public Set<String> getNotifications() {
+        if (notifications == null)
+            notifications = new HashSet<>();
         return notifications;
     }
 
