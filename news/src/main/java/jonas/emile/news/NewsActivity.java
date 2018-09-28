@@ -13,6 +13,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.navispeed.greg.common.APICaller;
 import com.navispeed.greg.common.utils.DownloadImageTask;
 import jonas.emile.news.models.News;
 import jonas.emile.news.services.NewsService;
@@ -37,6 +39,11 @@ public class NewsActivity extends AppCompatActivity {
 
         newsListLayout = (LinearLayout) findViewById(R.id.layout);
         fetchNews();
+    }
+
+    private String fetchPicture(String uuid) {
+        //APICaller. "baffd9a7-1473-435a-8c76-f915dcaf9ffc"
+        return "https://www.simplifia.fr/info/wp-content/uploads/2015/03/mairie.png";
     }
 
     private void fetchNews() {
@@ -112,13 +119,13 @@ public class NewsActivity extends AppCompatActivity {
         textSub.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
         textLayout.addView(textSub);
 
-        if (first == 0) {
+       /* if (first == 0) {
             new DownloadImageTask(img, this::blur, 20).execute("https://jpeg.org/images/jpeg2000-home.jpg"); // TODO change
         } else if (first == 1) {
             new DownloadImageTask(img, this::blur, 20).execute("http://cdn.skim.gs/image/upload/c_fill,dpr_1.0,f_auto,fl_lossy,q_auto,w_940/v1456335851/msi/Yorkshire_Terrier_xkjh7m.jpg"); // TODO change
-        } else {
-            new DownloadImageTask(img, this::blur, 20).execute("https://animalsadda.com/wp-content/uploads/2013/07/Asian-Palm-Civet-4.jpg"); // TODO change
-        }
+        } else {*/
+            new DownloadImageTask(img, this::blur, 20).execute(fetchPicture("test")); // TODO change"/api/common/upload/
+        //}
         first++;
     }
 

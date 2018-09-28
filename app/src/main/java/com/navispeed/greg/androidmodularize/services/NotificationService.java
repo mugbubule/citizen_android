@@ -15,6 +15,8 @@ import com.navispeed.greg.androidmodularize.models.Notification;
 import com.navispeed.greg.common.APICaller;
 import com.navispeed.greg.common.StoredData;
 import jonas.emile.news.NewsActivity;
+import jonas.emile.poll.activity.PollListActivity;
+
 import org.json.JSONArray;
 
 import java.util.Arrays;
@@ -43,7 +45,7 @@ public class NotificationService extends IntentService {
     public NotificationService() {
         super("NotificationService");
         register("Test", "/api", (a, b, c) -> {
-            Intent intent = new Intent(this, NewsActivity.class);
+            Intent intent = new Intent(this, PollListActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
             return b.setContentIntent(pendingIntent);
@@ -60,7 +62,9 @@ public class NotificationService extends IntentService {
             try {
                 Log.i("NotificationService", "Réveil");
                 fetch();
-                process(new Notification(UUID.randomUUID(), UUID.randomUUID(), "Nouvelle actualité", "", "2018-05-22 22:00:00", false, "/api"));
+                //StoredData.getInstance().getNotifications();
+
+                process(new Notification(UUID.randomUUID(), UUID.randomUUID(), "Nouvelle consultation", "", "2018-05-22 22:00:00", false, "/api"));
                 Thread.sleep(60000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -74,9 +78,7 @@ public class NotificationService extends IntentService {
             final Set<String> oldNotification = StoredData.getInstance().getNotifications();
             final Notification[] notifications = new Gson().fromJson(res.toString(), Notification[].class);
             final Stream<Notification> notificationStream = Arrays.stream(notifications).filter(n -> !oldNotification.contains(n.getUuid().toString()));
-
             notificationStream.forEach(this::process);
-
             StoredData.getInstance().setNotifications(Arrays.stream(notifications).map(n -> n.getUuid().toString()).collect(Collectors.toSet()));
         }, IGNORE, true, JSONArray.class);
     }
