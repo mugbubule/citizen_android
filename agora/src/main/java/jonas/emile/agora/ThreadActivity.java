@@ -95,12 +95,15 @@ public class ThreadActivity extends PRAutoFetchingActivity {
         LinearLayout hv = new LinearLayout(this);
         hv.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         hv.setOrientation(LinearLayout.HORIZONTAL);
+        hv.setBackground(getDrawable(R.drawable.background_white_rounded_shadow));
         if (addAtEnd)
             layout.addView(hv);
         else
             layout.addView(hv, 0);
         // author
         TextView authorText = new TextView(this);
+        authorText.setTextSize(20);
+        authorText.setTextColor(Color.parseColor("#e0e0e0"));
         LinearLayout.LayoutParams authorTextLayout = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
         authorTextLayout.setMargins(8, 0, 24, 0);
         authorText.setLayoutParams(authorTextLayout);
@@ -109,6 +112,8 @@ public class ThreadActivity extends PRAutoFetchingActivity {
         // post text
         TextView postText = new TextView(this);
         LinearLayout.LayoutParams postTextLayout = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        postText.setTextSize(20);
+        postText.setTextColor(Color.parseColor("#e0e0e0"));
         postText.setLayoutParams(postTextLayout);
         postText.setText(jsonPost.getString("message"));
         postText.setTextColor(BLACK);

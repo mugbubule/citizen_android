@@ -25,7 +25,7 @@ public class StoredData {
     public void close() {
         sharedPreferences.edit().putString("accessToken", accessToken).apply();
         sharedPreferences.edit().putString("refreshToken", refreshToken).apply();
-        sharedPreferences.edit().putStringSet("refreshToken", notifications).apply();
+        sharedPreferences.edit().putStringSet("notifications", notifications).apply();
     }
 
     public static synchronized StoredData getInstance() {

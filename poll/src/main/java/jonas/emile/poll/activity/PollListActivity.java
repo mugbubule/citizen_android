@@ -87,7 +87,9 @@ public class PollListActivity extends AppCompatActivity {
             Arrays.stream(polls).forEach(o -> pollService.getAvailablesChoices(o.getUuid()).accept((a) ->
                     Log.i("#getAvailablesChoices", a.toString()), IGNORE));
         }, (VolleyError error) -> {
-            Log.w("PollActivity", String.format("Something got wrong, code %d", error.networkResponse.statusCode));
+            if (error != null) {
+                Log.w("PollActivity", String.format("Something got wrong, code %d", error.networkResponse.statusCode));
+            }
         });
 
         findViewById(R.id.background_poll).post(() -> {
