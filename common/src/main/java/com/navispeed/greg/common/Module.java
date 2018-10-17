@@ -8,7 +8,7 @@ import android.app.Activity;
 
 public interface Module {
 
-    Class<? extends Activity> getMainActivity();
+  Class<? extends Activity> getMainActivity();
 
-    String getName();
+  String getName();
 }

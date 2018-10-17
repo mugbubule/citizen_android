@@ -7,7 +7,7 @@ build.dependsOn preBuild
 
 android {
     compileSdkVersion 26
-    buildToolsVersion '28.0.2'
+    buildToolsVersion '28.0.3'
     defaultConfig {
         def addConstant = {constantName, constantValue ->
             manifestPlaceholders = [ (constantName):constantValue]
@@ -16,7 +16,7 @@ android {
 
         addConstant("MODULES_LOADED", "toto")
         applicationId "com.navispeed.greg.androidmodularize"
-        minSdkVersion 24
+        minSdkVersion 26
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"

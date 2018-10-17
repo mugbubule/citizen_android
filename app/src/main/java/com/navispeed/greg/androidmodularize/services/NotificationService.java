@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.navispeed.greg.common.APICaller.IGNORE;
+import static java.nio.charset.CodingErrorAction.IGNORE;
 
 public class NotificationService extends IntentService {
 
@@ -62,8 +63,7 @@ public class NotificationService extends IntentService {
             try {
                 Log.i("NotificationService", "Réveil");
                 fetch();
-                //StoredData.getInstance().getNotifications();
-
+                StoredData.getInstance().getNotifications();
                 process(new Notification(UUID.randomUUID(), UUID.randomUUID(), "Nouvelle consultation", "", "2018-05-22 22:00:00", false, "/api"));
                 Thread.sleep(60000);
             } catch (InterruptedException e) {
