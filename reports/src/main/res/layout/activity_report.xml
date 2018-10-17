@@ -1,0 +1,110 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativelayout"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <RelativeLayout
+        android:id="@+id/background"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        android:background="@drawable/orleans1"></RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="31dp"
+            android:layout_marginTop="134dp"
+            android:layout_marginEnd="31dp"
+            android:orientation="vertical">
+
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/position"
+                android:layout_width="match_parent"
+                android:layout_height="136dp"
+                android:autofillHints="qsd"
+                android:background="@drawable/background_white_rounded_shadow"
+                android:completionHint="content"
+                android:hint="content"
+                android:inputType="textMultiLine"
+                android:textColor="@android:color/background_light"
+                android:textColorHint="#d0d4d4d4"
+                android:textSize="24sp" />
+
+            <AutoCompleteTextView
+                android:id="@+id/content"
+                android:layout_width="match_parent"
+                android:layout_height="69dp"
+                android:layout_marginStart="0dp"
+                android:layout_marginBottom="0dp"
+                android:autofillHints="qsd222"
+                android:completionHint="location"
+                android:hint="location"
+                android:inputType="text"
+                android:textColor="@android:color/background_light" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginBottom="0dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/photo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignTop="@+id/button"
+                        android:layout_toEndOf="@+id/button"
+                        android:text="photo" />
+
+                    <Button
+                        android:id="@+id/galerie"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginBottom="0dp"
+                        android:text="galerie" />
+
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/imageconfirm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/background_white_rounded_shadow" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="65dp"
+        android:text="@string/welcome"
+        android:textColor="#eee"
+        android:textSize="36sp" />
+
+</RelativeLayout>

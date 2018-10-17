@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.navispeed.greg.common.APICaller.IGNORE;
-import static java.nio.charset.CodingErrorAction.IGNORE;
 
 public class NotificationService extends IntentService {
 
