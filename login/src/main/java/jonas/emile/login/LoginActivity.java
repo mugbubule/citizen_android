@@ -291,9 +291,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 out.close();
                 connection.setConnectTimeout(5000);
                 connection.setReadTimeout(5000);
-                connection.getResponseCode();
+                int code = connection.getResponseCode();
                 //           connection.connect();
-                if (connection.getResponseCode() == 200) {
+                if (code == 200) {
                     //set the data
                     InputStream in = new BufferedInputStream(connection.getInputStream());
                     String inString = IOUtils.toString(in, StandardCharsets.UTF_8.name());
@@ -303,6 +303,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     mEmailView.setText(getString(R.string.app_name));
                     return true;
                 }
+                mPasswordView.setError(connection.getResponseMessage());
+                //mPasswordView.requestFocus();
                 connection.disconnect();
                 return false;
             } catch (JSONException | IOException e) {
@@ -322,7 +324,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             if (success) {
                 finish();
             } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
+                //mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
             }
         }
