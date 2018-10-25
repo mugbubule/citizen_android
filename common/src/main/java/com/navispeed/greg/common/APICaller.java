@@ -8,15 +8,19 @@ import android.util.Log;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import org.apache.commons.io.IOUtils;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -34,6 +38,72 @@ public class APICaller extends AsyncTask<String, Void, String> {
 
     private ReceiveData handler;
 
+    private static RetryPolicy retryPolicy = new RetryPolicy() {
+        int retry = 0;
+        int maxRetry = 1;
+
+        @Override
+        public int getCurrentTimeout() {
+            return 3000;
+        }
+
+        @Override
+        public int getCurrentRetryCount() {
+            return retry;
+        }
+
+        @Override
+        public void retry(VolleyError error) throws VolleyError {
+            if (retry < maxRetry) {
+                throw error;
+            }
+            retry += 1;
+            if (error.networkResponse.statusCode == 401) {
+                new RefreshToken().execute();
+            }
+        }
+    };
+
+    public static void refreshTokenOnInit() {
+        new RefreshToken().execute();
+    }
+
+    private static class RefreshToken extends AsyncTask<Void, Void, Boolean>{
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            try {
+                URL url = new URL("https://oauth.citizen.navispeed.eu/oauth/token");
+                HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+                connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                connection.setRequestProperty("Authorization", "Basic Y2l0aXplbjpzZWNyZXQ=");
+                connection.setRequestMethod("POST");
+                String parameters = "refresh_token=" + StoredData.getInstance().getRefreshToken() + "&grant_type=refresh_token";
+                connection.setFixedLengthStreamingMode(
+                        parameters.getBytes().length);
+                PrintWriter out = new PrintWriter(connection.getOutputStream());
+                out.print(parameters);
+                out.close();
+                connection.setConnectTimeout(5000);
+                connection.setReadTimeout(5000);
+                int code = connection.getResponseCode();
+                if (code == 200) {
+                    InputStream in = new BufferedInputStream(connection.getInputStream());
+                    String inString = IOUtils.toString(in, StandardCharsets.UTF_8.name());
+                    JSONObject jObject = new JSONObject(inString);
+                    StoredData.getInstance().setAccessToken(jObject.getString("access_token"));
+                    StoredData.getInstance().setRefreshToken(jObject.getString("refresh_token"));
+                    return true;
+                }
+                connection.disconnect();
+                return false;
+            } catch (JSONException | IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+    }
+
     private static class StringRequestWithAuth extends StringRequest {
 
         JSONObject body = new JSONObject();
@@ -43,7 +113,7 @@ public class APICaller extends AsyncTask<String, Void, String> {
             this(method, url, listener, errorListener, false);
         }
 
-        public StringRequestWithAuth(int method, String url, Response.Listener<String> listener, Response.ErrorListener errorListener, boolean withAuth) {
+        StringRequestWithAuth(int method, String url, Response.Listener<String> listener, Response.ErrorListener errorListener, boolean withAuth) {
             super(method, url, listener, errorListener);
             this.withAuth = withAuth;
         }
@@ -68,7 +138,7 @@ public class APICaller extends AsyncTask<String, Void, String> {
             return "application/json";
         }
 
-        public void setBody(JSONObject body) {
+        void setBody(JSONObject body) {
             this.body = body;
         }
     }
@@ -84,6 +154,7 @@ public class APICaller extends AsyncTask<String, Void, String> {
                         Log.e("APICaller.get", "LogicalError :" + e.getMessage());
                     }
                 }, onError, withAuth);
+        //stringRequest.setRetryPolicy(retryPolicy);
         queue.add(stringRequest);
     }
 
