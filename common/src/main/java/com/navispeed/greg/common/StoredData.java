@@ -20,6 +20,7 @@ public class StoredData {
         this.sharedPreferences = sharedPreferences;
         accessToken = sharedPreferences.getString("accessToken", "placeholder if not initizalized");
         refreshToken = sharedPreferences.getString("refreshToken", "placeholder if not initizalized");
+        APICaller.refreshTokenOnInit();
         notifications = sharedPreferences.getStringSet("notifications", new HashSet<String>());
     }
 

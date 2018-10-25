@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         cityName.setPadding(0,0,0,60);
         layout.addView(cityName);
 
-        if (logged) {
+       // if (logged) {
             List<Module> moduleList = instance.getModuleList();
             for (int i = 0; i < moduleList.size(); i++) {
                 final Module module = moduleList.get(i);
@@ -82,10 +82,10 @@ public class MainActivity extends AppCompatActivity {
                     MainActivity.this.startActivity(intent);
                 });
             }
-        } else {
+      //  } else {
           logged = true;
-          MainActivity.this.startActivity(new Intent(MainActivity.this, LoginActivity.class));
-        }
+    //      MainActivity.this.startActivity(new Intent(MainActivity.this, LoginActivity.class));
+      //  }
 
         Animation fadeIn = new AlphaAnimation(0, 1);
         fadeIn.setInterpolator(new DecelerateInterpolator());

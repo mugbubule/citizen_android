@@ -7,13 +7,20 @@
 
     <RelativeLayout
         android:id="@+id/background"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_marginStart="0dp"
-        android:layout_marginTop="0dp"
-        android:background="@drawable/orleans1"></RelativeLayout>
+        android:layout_marginTop="0dp">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            app:srcCompat="@drawable/orleans6" />
+    </RelativeLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -27,30 +34,31 @@
             android:orientation="vertical">
 
 
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/position"
-                android:layout_width="match_parent"
-                android:layout_height="136dp"
-                android:autofillHints="qsd"
-                android:background="@drawable/background_white_rounded_shadow"
-                android:completionHint="content"
-                android:hint="content"
-                android:inputType="textMultiLine"
-                android:textColor="@android:color/background_light"
-                android:textColorHint="#d0d4d4d4"
-                android:textSize="24sp" />
-
             <AutoCompleteTextView
-                android:id="@+id/content"
+                android:id="@+id/title"
                 android:layout_width="match_parent"
                 android:layout_height="69dp"
                 android:layout_marginStart="0dp"
                 android:layout_marginBottom="0dp"
                 android:autofillHints="qsd222"
-                android:completionHint="location"
-                android:hint="location"
+                android:background="@drawable/background_white_rounded_shadow"
+                android:completionHint="titre"
+                android:hint="titre"
                 android:inputType="text"
                 android:textColor="@android:color/background_light" />
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/description"
+                android:layout_width="match_parent"
+                android:layout_height="136dp"
+                android:autofillHints="qsd"
+                android:background="@drawable/background_white_rounded_shadow"
+                android:completionHint="description"
+                android:hint="description"
+                android:inputType="textMultiLine"
+                android:textColor="@android:color/background_light"
+                android:textColorHint="#d0d4d4d4"
+                android:textSize="24sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -106,5 +114,15 @@
         android:text="@string/welcome"
         android:textColor="#eee"
         android:textSize="36sp" />
+
+    <Button
+        android:id="@+id/send"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="100dp"
+        android:layout_marginEnd="100dp"
+        android:text="valider" />
 
 </RelativeLayout>
