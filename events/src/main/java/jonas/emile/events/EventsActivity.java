@@ -53,7 +53,8 @@ public class EventsActivity extends AppCompatActivity {
             } catch (JSONException e) {
                 showMessage(R.string.json_error);
             }
-        }, error -> showMessage(R.string.fetch_error));
+        }, error ->
+                showMessage(R.string.fetch_error));
     }
 
     int first = 0; // TODO remove

@@ -21,7 +21,7 @@ public class EventsService {
 
     public BiConsumer<Consumer<JSONArray>, Response.ErrorListener> getAll() {
         return (Consumer<JSONArray> consumer, Response.ErrorListener onError) ->
-                APICaller.get(c, "/events/all", consumer, onError, false, JSONArray.class);
+                APICaller.get(c, "/events/all", consumer, onError, true, JSONArray.class);
     }
 
     public BiConsumer<Consumer<JSONObject>, Response.ErrorListener> getDetails(String uuid) {
