@@ -10,15 +10,20 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 
+import com.android.volley.Response;
 import com.navispeed.greg.common.APICaller;
+import com.navispeed.greg.common.Consumer;
 import com.navispeed.greg.common.ReceiveArray;
 import com.navispeed.greg.common.ReceiveData;
 
@@ -28,13 +33,16 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.function.BiConsumer;
 
+import jonas.emile.reports.services.ReportsServices;
 import jp.wasabeef.blurry.Blurry;
 
 /* Created by jonas_e on 18/11/2017. */
 
 public class ReportsActivity extends AppCompatActivity {
     final int REQUEST_PERMISSION_CAMERA = 1;
+    ReportsServices reportsServices = new ReportsServices(this);
     File pic = null;
     AppCompatActivity reportsActivity = this;
 
@@ -66,7 +74,7 @@ public class ReportsActivity extends AppCompatActivity {
             }
         };
         apiCaller.setHandler(handler);
-        apiCaller.execute("https://citizen.navispeed.eu/api/reports/", "GET");
+//        apiCaller.execute("https://citizen.navispeed.eu/api/reports/", "GET");
 
         findViewById(R.id.galerie).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,9 +89,20 @@ public class ReportsActivity extends AppCompatActivity {
             public void onClick(View view) {
                 ActivityCompat.requestPermissions(reportsActivity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_PERMISSION_CAMERA);
             }
-
         });
 
+        findViewById(R.id.send).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String description = ((TextInputEditText)findViewById(R.id.description)).getText().toString();
+                String title = ((AutoCompleteTextView)findViewById(R.id.title)).getText().toString();
+                BiConsumer<Consumer<String>, Response.ErrorListener> test = reportsServices.sendReport(description, title);
+                test.accept(array -> {
+
+                }, message ->
+                        Log.i("<<<<<<<<<<<<<<", Integer.toString(message.networkResponse.statusCode)));
+            }
+        });
 
 
 
