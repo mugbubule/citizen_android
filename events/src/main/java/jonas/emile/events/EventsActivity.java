@@ -66,7 +66,6 @@ public class EventsActivity extends AppCompatActivity {
         if (lastEventFetched == null || DateTime.parse(lastEventFetched.datetime, DateTimeFormat.forPattern("YYYY-MM-DD HH:mm:ss")).getMonthOfYear() != dateTime.getMonthOfYear()) {
             TextView txtMonth = new TextView(this);
             txtMonth.setTextColor(Color.BLACK);
-            txtMonth.setText(new DateFormatSymbols().getMonths()[dateTime.getMonthOfYear()] + " " + dateTime.getYear());
             txtMonth.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
             txtMonth.setGravity(Gravity.CENTER);
             eventListLayout.addView(txtMonth);
@@ -122,15 +121,15 @@ public class EventsActivity extends AppCompatActivity {
         textLayout.addView(separator);
 
         TextView textSub = new TextView(this);
-        textSub.setText(new DateFormatSymbols().getWeekdays()[dateTime.getDayOfWeek()] + " " + dateTime.getDayOfMonth());
+        textSub.setText(new DateFormatSymbols().getWeekdays()[dateTime.getDayOfWeek()] + " " + dateTime.getDayOfMonth() + " " + new DateFormatSymbols().getMonths()[dateTime.getMonthOfYear()]);
         textSub.setTextColor(Color.WHITE);
         textSub.setGravity(Gravity.CENTER);
         textSub.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
         textLayout.addView(textSub);
 
-        if (first == 0) {
+        if (first % 3 == 0) {
             new DownloadImageTask(img, () -> {}, 20).execute("http://4.bp.blogspot.com/-c8Tnsoq1IjE/UDsk0cpg2GI/AAAAAAAAISA/r36wSAKwexU/s1600/Night+City+Glow+Wallpapers+1.jpg"); // TODO change
-        } else if (first == 1) {
+        } else if (first % 3 == 1) {
             new DownloadImageTask(img, () -> {}, 20).execute("http://www.highreshdwallpapers.com/wp-content/uploads/2011/09/Epic-High-Definition-City-Wallpaper.jpg"); // TODO change
         } else {
             new DownloadImageTask(img, () -> {}, 20).execute("http://2.bp.blogspot.com/-z6zZ2ZeUWG0/UDsmg9pHH5I/AAAAAAAAITI/xInXSA8LElk/s1600/Night+City+Glow+Wallpapers.jpg"); // TODO change
