@@ -26,6 +26,6 @@ public class EventsService {
 
     public BiConsumer<Consumer<JSONObject>, Response.ErrorListener> getDetails(String uuid) {
         return (Consumer<JSONObject> consumer, Response.ErrorListener onError) ->
-                APICaller.get(c, "/events/" + uuid, consumer, onError, false, JSONObject.class);
+                APICaller.get(c, "/events/details/" + uuid, consumer, onError, true, JSONObject.class);
     }
 }

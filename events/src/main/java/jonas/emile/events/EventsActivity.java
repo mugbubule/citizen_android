@@ -1,5 +1,6 @@
 package jonas.emile.events;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
@@ -138,9 +139,9 @@ public class EventsActivity extends AppCompatActivity {
     }
 
     private void eventClick(Event event) {
-        /*Intent intent = new Intent(EventActivity.this, EventDetailsActivity.class);
+        Intent intent = new Intent(EventsActivity.this, EventsDetailActivity.class);
         intent.putExtra("eventUuid", event.uuid);
-        startActivity(intent);*/
+        startActivity(intent);
     }
 
     private void showMessage(int stringId) {
