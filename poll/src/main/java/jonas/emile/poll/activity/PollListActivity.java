@@ -1,6 +1,7 @@
 package jonas.emile.poll.activity;
 
 import android.annotation.SuppressLint;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -22,6 +23,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.android.volley.VolleyError;
 import com.google.gson.Gson;
+import com.navispeed.greg.common.StoredData;
+
 import jonas.emile.poll.PollService;
 import jonas.emile.poll.R;
 import jonas.emile.poll.model.Choice;
@@ -84,7 +87,7 @@ public class PollListActivity extends AppCompatActivity {
             final Poll[] polls = new Gson().fromJson(array.toString(), Poll[].class);
             mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), polls);
             mViewPager.setAdapter(mSectionsPagerAdapter);
-            Arrays.stream(polls).forEach(o -> pollService.getAvailablesChoices(o.getUuid()).accept((a) ->
+            Arrays.stream(polls).forEach(o -> pollService.getAvailablesChoices(o.getUuid(), Boolean.getBoolean(o.getPublished())).accept((a) ->
                     Log.i("#getAvailablesChoices", a.toString()), IGNORE));
         }, (VolleyError error) -> {
             if (error != null) {
@@ -171,23 +174,27 @@ public class PollListActivity extends AppCompatActivity {
             pollService.getAvailablesChoices(p.getUuid()).accept((choices) -> {
                 for (int i = 0; i < choices.length(); ++i) {
                     try {
-                        final Button child = new Button(getContext());
-                        child.setEnabled(!p.getEnd().isBeforeNow());
-                        child.setText(choices.getJSONObject(i).getString("text"));
-                        child.setBackgroundResource(R.drawable.background_white_rounded_shadow);
-                        child.setTextColor(Color.parseColor("#e0e0e0"));
-                        int finalI = i;
-                        child.setOnClickListener((View v) -> {
-                            try {
-                                final String uuid = choices.getJSONObject(finalI).getString("uuid");
-                                Log.i("Poll", "Choose " + uuid);
-                                pollService.answer(p.getUuid(), uuid).accept(consumable -> Log.i("Poll", "Posted"),
-                                        error -> Log.w("Poll", "Error: " + error.toString()));
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        });
-                        layout.addView(child);
+                        if (!StoredData.getInstance().getVotedPolls().contains(p.getUuid().toString())) {
+                            final Button child = new Button(getContext());
+                            child.setEnabled(!p.getEnd().isBeforeNow());
+                            child.setText(choices.getJSONObject(i).getString("text"));
+                            child.setBackgroundResource(R.drawable.background_white_rounded_shadow);
+                            child.setTextColor(Color.parseColor("#e0e0e0"));
+                            int finalI = i;
+                            child.setOnClickListener((View v) -> {
+                                try {
+                                    final String uuid = choices.getJSONObject(finalI).getString("uuid");
+                                    Log.i("Poll", "Choose " + uuid);
+                                    pollService.answer(p.getUuid(), uuid).accept(consumable -> Log.i("Poll", "Posted"),
+                                            error -> Log.w("Poll", "Error: " + error.toString()));
+                                    StoredData.getInstance().addVotedPolls(p.getUuid().toString());
+                                    layout.removeAllViews();
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            });
+                            layout.addView(child);
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
