@@ -273,7 +273,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // TODO: attempt authentication against a network service.
 
             try {
-
                 URL url = new URL("https://oauth.citizen.navispeed.eu/oauth/token");
                 HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
                 //connection.setDoOutput(true);
@@ -321,7 +320,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mAuthTask = null;
             showProgress(false);
 
+
             if (success) {
+                StoredData.getInstance().setLogged(true);
                 finish();
             } else {
                 //mPasswordView.setError(getString(R.string.error_incorrect_password));
