@@ -188,7 +188,7 @@ public class APICaller extends AsyncTask<String, Void, String> {
         queue.add(stringRequest);
     }
 
-    @Deprecated
+/*    @Deprecated
     public static void get(String endpoint, ReceiveData handler) {
         new APICaller().setHandler(handler).get(endpoint);
     }
@@ -196,7 +196,7 @@ public class APICaller extends AsyncTask<String, Void, String> {
     @Deprecated
     public void get(String endpoint) {
         execute(API_URL + (endpoint.startsWith("/") ? endpoint : "/" + endpoint), "GET");
-    }
+    }*/
 
     @Deprecated
     @Override
