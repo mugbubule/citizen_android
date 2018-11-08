@@ -24,15 +24,18 @@ import android.widget.ImageView;
 import com.android.volley.Response;
 import com.navispeed.greg.common.APICaller;
 import com.navispeed.greg.common.Consumer;
+import com.navispeed.greg.common.FileUploader;
 import com.navispeed.greg.common.ReceiveArray;
 import com.navispeed.greg.common.ReceiveData;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.UUID;
 import java.util.function.BiConsumer;
 
 import jonas.emile.reports.services.ReportsServices;
@@ -43,6 +46,8 @@ import jp.wasabeef.blurry.Blurry;
 public class ReportsActivity extends AppCompatActivity {
     final int REQUEST_PERMISSION_CAMERA = 1;
     ReportsServices reportsServices = new ReportsServices(this);
+    String description = null;
+    String title = null;
     File pic = null;
     AppCompatActivity reportsActivity = this;
 
@@ -94,13 +99,33 @@ public class ReportsActivity extends AppCompatActivity {
         findViewById(R.id.send).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String description = ((TextInputEditText)findViewById(R.id.description)).getText().toString();
-                String title = ((AutoCompleteTextView)findViewById(R.id.title)).getText().toString();
-                BiConsumer<Consumer<String>, Response.ErrorListener> test = reportsServices.sendReport(description, title);
-                test.accept(array -> {
+                description = ((TextInputEditText) findViewById(R.id.description)).getText().toString();
+                title = ((AutoCompleteTextView) findViewById(R.id.title)).getText().toString();
+                if (pic == null) {
+                    BiConsumer<Consumer<String>, Response.ErrorListener> test = reportsServices.sendReport(description, title);
+                    test.accept(array -> {
 
-                }, message ->
-                        Log.i("<<<<<<<<<<<<<<", Integer.toString(message.networkResponse.statusCode)));
+                    }, message ->
+                            Log.i("<<<<<<<<<<<<<<", Integer.toString(message.networkResponse.statusCode)));
+                } else {
+                    FileUploader fileUploader = new FileUploader(reportsActivity);
+                    ReceiveData handler = new ReceiveData() {
+                        @Override
+                        public void onReceiveData(String data) {
+                            Log.i("hey my body count", data.toString());
+                            System.out.print(data);
+                            BiConsumer<Consumer<String>, Response.ErrorListener> test = reportsServices.sendReport(description, title, UUID.fromString(data.toString()));
+                            test.accept(array -> {
+
+                            }, message ->
+                                    Log.i("<<<<<<<<<<<<<<", Integer.toString(message.networkResponse.statusCode)));
+                            //data.get(0);
+                            //content.setText(data.toString());
+                        }
+                    };
+                    fileUploader.setHandler(handler);
+                    fileUploader.execute(pic);
+                }
             }
         });
 
