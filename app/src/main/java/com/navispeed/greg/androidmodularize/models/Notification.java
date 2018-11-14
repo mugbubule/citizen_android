@@ -47,7 +47,7 @@ public class Notification {
         return formatter.parseDateTime(this.created);
     }
 
-    public Boolean getViewed() {
+    public Boolean isViewed() {
         return viewed;
     }
 

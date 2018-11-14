@@ -56,7 +56,7 @@ public class NewsActivity extends AppCompatActivity {
             } catch (JSONException e) {
                 showMessage(R.string.json_error);
             }
-        }, error -> showMessage(R.string.fetch_error));
+        }, error -> Toast.makeText(this, error.getLocalizedMessage(), Toast.LENGTH_LONG).show());
     }
 
     int first = 0; // TODO remove
