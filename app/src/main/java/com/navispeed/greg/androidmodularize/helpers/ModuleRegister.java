@@ -12,7 +12,6 @@ import jonas.emile.reports.ReportsModule;
 
 import java.util.ArrayList;
 import java.util.List;
-
 /**
  * Created by greg on 04/06/2017.
  */
@@ -33,10 +32,10 @@ public class ModuleRegister {
         this.moduleList.add(NewsModule.getInstance());
         this.moduleList.add(AgoraModule.getInstance());
         this.moduleList.add(PollModule.getInstance());
+        this.moduleList.add(ReportsModule.getInstance());
     }
 
     public final List<Module> getModuleList() {
         return moduleList;
     }
 }
-

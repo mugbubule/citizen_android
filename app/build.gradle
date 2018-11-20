@@ -6,8 +6,8 @@ preBuild << {
 build.dependsOn preBuild
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion '27.0.3'
+    compileSdkVersion 26
+    buildToolsVersion '28.0.3'
     defaultConfig {
         def addConstant = {constantName, constantValue ->
             manifestPlaceholders = [ (constantName):constantValue]
@@ -16,8 +16,8 @@ android {
 
         addConstant("MODULES_LOADED", "toto")
         applicationId "com.navispeed.greg.androidmodularize"
-        minSdkVersion 24
-        targetSdkVersion 24
+        minSdkVersion 26
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -38,6 +38,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "com.android.support:support-compat:26.1.0"
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
@@ -50,7 +51,7 @@ dependencies {
     api project(":news")
     api project(":poll")
     api project(":reports")
-    api 'com.android.support:appcompat-v7:24.2.1'
+    api 'com.android.support:appcompat-v7:26.1.0'
     testImplementation'junit:junit:4.12'
 }
 

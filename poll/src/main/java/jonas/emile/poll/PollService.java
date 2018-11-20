@@ -37,6 +37,10 @@ public class PollService {
         return (Consumer<JSONArray> consumer, Response.ErrorListener onError) -> APICaller.get(c, String.format("/poll/poll/%s/choices", pollUuid), consumer, onError, true, JSONArray.class);
     }
 
+    public apiConsummer<JSONArray> getAvailablesChoices(UUID pollUuid, boolean available) {
+        return (Consumer<JSONArray> consumer, Response.ErrorListener onError) -> APICaller.get(c, String.format("/poll/poll/%s/choices", pollUuid), consumer, onError, true, JSONArray.class);
+    }
+
     public apiConsummer<Void> answer(UUID pollUuid, String choice) {
         final JSONObject body = new JSONObject();
         try {

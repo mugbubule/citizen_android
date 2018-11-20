@@ -30,6 +30,6 @@
         android:text="@string/welcome"
         android:textSize="36sp"
         android:textColor="#eee"
-  />
+        />
 
 </RelativeLayout>

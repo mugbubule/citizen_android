@@ -14,5 +14,5 @@ public abstract class ReceiveArray implements ReceiveData {
         }
     }
 
-    public abstract void onReceiveData(JSONArray data);
+    public abstract void onReceiveData(JSONArray data) throws JSONException;
 }
